@@ -2,7 +2,7 @@
 
 [![Paper](https://img.shields.io/badge/Paper-arXiv-red)](https://arxiv.org/pdf/2502.02763)
 [![Demo](https://img.shields.io/badge/Demo-Interactive-blue)](https://cognitivemodeling.github.io/FLIP/#demo)
-[![Models](https://img.shields.io/badge/Models-Download-green)](TODO_MODEL_CHECKPOINTS_LINK)
+[![Models](https://img.shields.io/badge/Models-Download-green)](https://nc.mlcloud.uni-tuebingen.de/index.php/s/FqFzp5LEz8HYtzx)
 [![Dataset](https://img.shields.io/badge/Dataset-ObjaScale-orange)](TODO_DATASET_LINK)
 [![Project Page](https://img.shields.io/badge/Project%20Page-FLIP-black)](https://cognitivemodeling.github.io/FLIP)
 
