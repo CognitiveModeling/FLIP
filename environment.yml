@@ -1,0 +1,31 @@
+name: flip
+channels:
+  - conda-forge
+  - pytorch  
+  - nvidia
+  - defaults
+dependencies:
+  # Core ML/DL stack
+  - pytorch
+  - lightning
+  - xformers
+  - einops
+  
+  # Data processing
+  - h5py
+  - numpy
+  - opencv
+  - pandas
+  
+  # Visualization
+  - matplotlib
+  
+  # System/utilities
+  - pip
+  - tqdm
+  
+  # Pip-only packages
+  - pip:
+      - turbojpeg
+      
+prefix: flip

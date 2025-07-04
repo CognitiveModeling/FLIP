@@ -1,0 +1,2004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Looking Locally: Object-Centric Vision Transformers as Foundation Models for Efficient Segmentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fafafa;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-weight: 600;
+        }
+        .authors {
+            margin: 20px 0;
+            font-size: 1.1em;
+            color: #7f8c8d;
+        }
+        .affiliation {
+            font-size: 1em;
+            color: #95a5a6;
+            margin-bottom: 20px;
+        }
+        .links {
+            margin: 30px 0;
+        }
+        .links a {
+            display: inline-block;
+            margin: 5px 10px;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s;
+        }
+        .links a:hover {
+            background: #2980b9;
+        }
+        .demo-button {
+            background: #e74c3c !important;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .demo-button:hover {
+            background: #c0392b !important;
+        }
+        .section {
+            background: white;
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .highlight-box {
+            background: #ecf0f1;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .result-card {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .result-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .result-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .figure {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .figure img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .figure-caption {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+        .demo-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .demo-section h2 {
+            color: white;
+            border-bottom: 3px solid rgba(255,255,255,0.3);
+        }
+        .demo-embed {
+            background: white;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            color: #333;
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .comparison-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .best-result {
+            background: #d4edda;
+            font-weight: bold;
+        }
+
+        /* Demo-specific styles */
+        .demo-container {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            grid-gap: 20px;
+            margin: 20px 0;
+            min-height: 0;
+        }
+        .demo-panel {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .demo-panel-title {
+            background-color: #f5f5f5;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+        .demo-canvas-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fafafa;
+            padding: 10px;
+            min-height: 200px;
+            overflow: hidden;
+            width: 100% !important;
+            height: auto !important;
+            display: block;
+        }
+        .demo-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            cursor: crosshair;
+            border: 1px solid #ddd;
+            object-fit: contain;
+        }
+        #originalCanvas {
+            cursor: crosshair;
+        }
+        #topControls, #bottomControls {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .top-controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            grid-gap: 15px;
+            align-items: center;
+        }
+        
+        .bottom-controls-section {
+            margin-bottom: 15px;
+        }
+        
+        .bottom-params-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .checkboxes-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        
+        .button-row {
+            text-align: center;
+        }
+        
+        .button-row button {
+            margin: 0 5px;
+        }
+        
+        @media (max-width: 900px) {
+            .top-controls-grid {
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr 1fr 1fr;
+            }
+            .bottom-params-grid, .checkboxes-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .top-controls-grid, .bottom-params-grid, .checkboxes-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-row button {
+                margin: 2px;
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+        }
+        
+        .control-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .control-item label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .control-item input[type="range"] {
+            width: 100%;
+            margin-bottom: 2px;
+        }
+        
+        .control-item span {
+            font-family: monospace;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .control-item input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e8f4f8;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .demo-button-style {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        .demo-button-style:hover {
+            background-color: #0056b3;
+        }
+        
+        .demo-button-style:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        #fileInput {
+            margin-bottom: 20px;
+        }
+        
+        .demo-legend {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #ccc;
+        }
+        
+        #debugConsole {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        #debugToggle {
+            margin-top: 0;
+            font-size: 14px;
+            background-color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .links a {
+                display: block;
+                margin: 10px 0;
+            }
+            .demo-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Looking Locally: Object-Centric Vision Transformers as Foundation Models for Efficient Segmentation</h1>
+        <div class="authors">
+            Manuel Traub, Martin V. Butz
+        </div>
+        <div class="affiliation">
+            Cognitive Modeling, Department of Computer Science and Department of Psychology,<br>
+            University of Tübingen, Germany
+        </div>
+        <div class="links">
+            <a href="https://arxiv.org/pdf/2502.02763">📄 Paper (arXiv)</a>
+            <a href="https://github.com/CognitiveModeling/FLIP">💻 Code (GitHub)</a>
+            <!-- TODO: Replace with actual model download links -->
+            <a href="TODO_MODEL_CHECKPOINTS_LINK">⚡ Model Checkpoints</a>
+            <!-- TODO: Replace with actual dataset links -->
+            <a href="TODO_DATASET_LINK">📊 ObjaScale Dataset</a>
+            <a href="#demo" class="demo-button">🚀 Try Interactive Demo</a>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Abstract</h2>
+        <p style="text-align: justify;">
+            Current state-of-the-art segmentation models encode entire images before focusing on specific objects.
+            As a result, they waste computational resources—particularly when small objects are to be segmented in high-resolution scenes.
+            We introduce <strong>FLIP (Fovea-Like Input Patching)</strong>, a parameter-efficient vision model that realizes object segmentation through biologically-inspired top-down attention.
+            FLIP selectively samples multi-resolution patches centered on objects of interest from the input.
+            As a result, it allocates high-resolution processing to object centers while maintaining coarser peripheral context.
+            This off-grid, scale-invariant design enables FLIP to outperform META's Segment Anything models (SAM) by large margins:
+            With <strong>more than 1000x fewer parameters</strong>, FLIP-Tiny (0.51M parameters) reaches a mean IoU of <strong>78.24%</strong> while SAM-H reaches 75.41% IoU (641.1M parameters).
+            FLIP-Large even achieves <strong>80.33% mean IoU (96.6M parameters)</strong>, still running about <strong>6× faster</strong> than SAM-H.
+            We evaluate on six benchmarks in total.
+            In five established benchmarks (<em>Hypersim, KITTI-360, OpenImages, COCO, LVIS</em>) FLIP consistently outperforms SAM and various variants of it.
+            In our novel <strong>ObjaScale</strong> dataset, which stress-tests scale invariance with objects ranging from <strong>0.0001% up-to 25%</strong> of the image area, we show that FLIP segments even very small objects accurately, where existing models fail severely.
+            FLIP opens new possibilities for real-time, object-centric vision applications and offers much higher energy efficiency.
+            We believe that FLIP can act as a powerful foundation model, as it is very well-suited to track objects over time, for example, when being integrated into <em>slot-based scene segmentation</em> architectures.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Key Results</h2>
+        <div class="results-grid">
+            <div class="result-card">
+                <div class="result-number">80.33%</div>
+                <div class="result-label">FLIP-Large mean IoU<br>(vs 75.41% SAM-H)</div>
+            </div>
+            <div class="result-card">
+                <div class="result-number">1,257×</div>
+                <div class="result-label">Fewer parameters<br>(FLIP-Tiny vs SAM-H)</div>
+            </div>
+            <div class="result-card">
+                <div class="result-number">6×</div>
+                <div class="result-label">Faster inference<br>(FLIP-Large vs SAM-H)</div>
+            </div>
+            <div class="result-card">
+                <div class="result-number">78.24%</div>
+                <div class="result-label">FLIP-Tiny mean IoU<br>(0.51M parameters)</div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>Bottom Line:</strong> FLIP achieves superior segmentation performance with orders of magnitude fewer parameters than existing methods, 
+            making it ideal for real-time applications and energy-efficient deployments.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Method Overview</h2>
+        <div class="figure">
+            <img src="./flip-arch.svg" alt="FLIP Architecture Overview" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="figure-caption">
+                <p style="text-align: justify;">
+                  <b>FLIP architecture diagram.</b>
+                  The Foveal Patching module dynamically samples multi-resolution patches centered around objects of interest.
+                  These patches are embedded into a unified latent space using resolution-specific Patch Embedding Modules
+                  (<span>E<sub>r<sub>0</sub>}</sub></span> to <span>E<sub>r<sub>K</sub>}</sub></span>).
+                  The Vision Transformer Encoder processes the embedded patches, generating keys
+                  <span>K<sub>1..n</sub></span> and values <span>V<sub>1..n</sub></span>.
+                  The Pixel-Predictor performs attention over queries derived from pixel coordinates
+                  <span>Q<sub>x,y</sub></span>, enabling instance segmentation with pixel-level precision.
+                </p>
+            </div>
+        </div>
+
+        <p>
+            FLIP introduces a novel <strong>fovea-like input patching mechanism</strong> that:
+        </p>
+        <ul>
+            <li><strong>Dynamically samples multi-resolution patches</strong> centered around objects of interest</li>
+            <li><strong>Allocates high-resolution processing</strong> to object centers while maintaining coarse peripheral context</li>
+            <li><strong>Operates off-grid and scale-invariantly</strong>, robust to large variations in object size</li>
+            <li><strong>Enables pixel-level segmentation</strong> through efficient attention mechanisms</li>
+        </ul>
+
+        <div class="figure">
+            <img src="./example.svg" alt="Foveal Patch Sampling Visualization" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="figure-caption" style="text-align: justify;">
+                Visualization of our <strong>FLIP (Fovea-Like Input Patching)</strong> approach applied to an image from the
+                <em>KITTI-360</em> dataset, showcasing potential applications in autonomous driving.
+                The figure illustrates how our model dynamically focuses on multiple objects within a complex urban scene by
+                allocating multi-resolution patches centered around estimated object locations.
+                Higher-resolution patches (smaller sizes) are concentrated on critical areas such as vehicles and road signs,
+                emulating a foveal vision system, while lower-resolution patches (larger sizes) cover peripheral regions to
+                enable the consideration of the surrounding context.
+                Patches are color-coded by size:
+                <span style="color: purple;">purple</span> for <code>16×16</code> patches,
+                <span style="color: yellow;">yellow</span> for <code>8×8</code>,
+                <span style="color: green;">green</span> for <code>4×4</code>,
+                <span style="color: blue;">blue</span> for <code>2×2</code>, and
+                <span style="color: red;">red</span> for <code>1×1</code>.
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Performance Comparison</h2>
+        
+        <div class="figure">
+            <img src="./performance.svg" alt="Performance vs Parameters Comparison" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="figure-caption">
+                Mean IoU across six datasets (Hypersim, KITTI-360, OpenImages, COCO, LVIS, ObjaScale) plotted against model parameters and inference time. 
+            </div>
+        </div>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>Parameters</th>
+                    <th>Mean&nbsp;IoU&nbsp;(%)</th>
+                    <th>Inference&nbsp;Time&nbsp;(ms)</th>
+                    <th>Speed-up&nbsp;vs&nbsp;SAM-H</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- ------------- SAM baseline ------------- -->
+                <tr>
+                    <td>SAM-H</td>
+                    <td>641.1M</td>
+                    <td>75.41</td>
+                    <td>232.04</td>
+                    <td>1.0×</td>
+                </tr>
+                <tr>
+                    <td>SAM-L</td>
+                    <td>312.3M</td>
+                    <td>75.10</td>
+                    <td>148.78</td>
+                    <td>1.6×</td>
+                </tr>
+                <tr>
+                    <td>SAM-B</td>
+                    <td>93.7M</td>
+                    <td>73.82</td>
+                    <td>72.67</td>
+                    <td>3.2×</td>
+                </tr>
+
+                <!-- ------------- FastSAM ------------- -->
+                <tr>
+                    <td>FastSAM-s</td>
+                    <td>11.8M</td>
+                    <td>44.58</td>
+                    <td>9.94</td>
+                    <td>23.3×</td>
+                </tr>
+                <tr>
+                    <td>FastSAM-x</td>
+                    <td>72.2M</td>
+                    <td>48.04</td>
+                    <td>24.32</td>
+                    <td>9.5×</td>
+                </tr>
+
+                <!-- ------------- MobileSAM ------------- -->
+                <tr>
+                    <td>MobileSAM</td>
+                    <td>10.13M</td>
+                    <td>71.33</td>
+                    <td>21.15</td>
+                    <td>11.0×</td>
+                </tr>
+
+                <!-- ------------- EfficientSAM ------------- -->
+                <tr>
+                    <td>EfficientSAM-T</td>
+                    <td>10.22M</td>
+                    <td>72.29</td>
+                    <td>26.75</td>
+                    <td>8.7×</td>
+                </tr>
+                <tr>
+                    <td>EfficientSAM-S</td>
+                    <td>26.41M</td>
+                    <td>73.43</td>
+                    <td>47.98</td>
+                    <td>4.8×</td>
+                </tr>
+
+                <!-- ------------- FLIP family (best-result rows highlighted) ------------- -->
+                <tr class="best-result">
+                    <td><strong>FLIP-Tiny</strong></td>
+                    <td><strong>0.51M</strong></td>
+                    <td><strong>78.24</strong></td>
+                    <td><strong>9.82</strong></td>
+                    <td><strong>23.6×</strong></td>
+                </tr>
+                <tr class="best-result">
+                    <td><strong>FLIP-Small</strong></td>
+                    <td><strong>2.3M</strong></td>
+                    <td><strong>79.29</strong></td>
+                    <td><strong>12.19</strong></td>
+                    <td><strong>19.0×</strong></td>
+                </tr>
+                <tr class="best-result">
+                    <td><strong>FLIP-Middle</strong></td>
+                    <td><strong>11.5M</strong></td>
+                    <td><strong>79.93</strong></td>
+                    <td><strong>17.54</strong></td>
+                    <td><strong>13.2×</strong></td>
+                </tr>
+                <tr class="best-result">
+                    <td><strong>FLIP-Large</strong></td>
+                    <td><strong>96.6M</strong></td>
+                    <td><strong>80.33</strong></td>
+                    <td><strong>38.65</strong></td>
+                    <td><strong>6.0×</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Scale Invariance: ObjaScale Dataset</h2>
+        <p>
+            We introduce <strong>ObjaScale</strong>, a novel benchmark specifically designed to stress-test scale invariance 
+            with objects ranging from 0.0001% up to 25% of the image area. FLIP demonstrates superior performance 
+            on small objects where existing models fail severely.
+        </p>
+
+        <div class="figure">
+            <img src="./heatmaps.svg" alt="IoU Heatmaps on ObjaScale Dataset" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="figure-caption">
+                IoU heatmaps on ObjaScale showing relative vs. absolute mask size. FLIP-Large maintains strong accuracy 
+                even for very small objects, while SAM variants suffer sharp performance drops.
+            </div>
+        </div>
+
+        <div class="figure">
+            <img src="./objaverse.svg" alt="ObjaScale Dataset Examples" style="width: 100%; height: 100%; object-fit: cover;">
+            <div class="figure-caption">
+                Examples from ObjaScale dataset showing diverse objects at varying scales rendered with 
+                high-resolution HDRI backgrounds to challenge segmentation models.
+            </div>
+        </div>
+    </div>
+
+    <div class="section demo-section" id="demo">
+        <h2>🚀 Flip-Tiny Interactive Demo</h2>
+        <p>
+            Try FLIP-Tiny directly in your browser! Upload an image, click on the Ellipse view to set the Gaussian center, 
+            adjust parameters using the control grid, and see real-time object segmentation. Ensure the selected object fits entirely within the ellipse, without overlap, for optimal results. 
+            Click "Sample Patches" to extract patches, then "Run Inference" to predict the mask. The ellipse shows the (2σ) area of the 2D Gaussian input prompt. 
+        </p>
+        <div class="demo-embed">
+            <div class="demo-container">
+                
+                <div id="fileInput">
+                    <div>
+                        <label for="imageUpload">Upload an image:</label>
+                        <input type="file" id="imageUpload" accept="image/*">
+                    </div>
+                </div>
+
+                <div id="topControls">
+                    <div class="top-controls-grid">
+                        <div class="control-item">
+                            <label>Center X</label>
+                            <input type="range" id="muX" min="-1" max="1" step="0.01" value="-0.14">
+                            <span id="muXValue">0.00</span>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label>Center Y</label>
+                            <input type="range" id="muY" min="-1" max="1" step="0.01" value="0.38">
+                            <span id="muYValue">0.00</span>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label>Rotation</label>
+                            <input type="range" id="rotation" min="-180" max="180" step="1" value="-3">
+                            <span id="rotationValue">0°</span>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label>Sigma X</label>
+                            <input type="range" id="sigmaX" min="0.01" max="0.5" step="0.01" value="0.17">
+                            <span id="sigmaXValue">0.20</span>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label>Sigma Y</label>
+                            <input type="range" id="sigmaY" min="0.01" max="0.5" step="0.01" value="0.09">
+                            <span id="sigmaYValue">0.20</span>
+                        </div>
+                        
+                        <div class="control-item">
+                            <!-- Empty cell -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="demo-grid">
+                    <div class="demo-panel">
+                        <div class="demo-panel-title">Input Prompt (2σ) Ellipse</div>
+                        <div class="demo-canvas-container">
+                            <canvas id="originalCanvas" class="demo-canvas"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="demo-panel">
+                        <div class="demo-panel-title">Input Prompt 2D Gaussian</div>
+                        <div class="demo-canvas-container">
+                            <canvas id="gaussianCanvas" class="demo-canvas"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="demo-panel">
+                        <div class="demo-panel-title">Sampled Patches</div>
+                        <div class="demo-canvas-container">
+                            <canvas id="patchesCanvas" class="demo-canvas"></canvas>
+                        </div>
+                        <div class="demo-legend" id="patchLegend"></div>
+                    </div>
+
+                    <div class="demo-panel">
+                        <div class="demo-panel-title">Predicted Mask</div>
+                        <div class="demo-canvas-container">
+                            <canvas id="maskCanvas" class="demo-canvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bottomControls">
+                    <div class="bottom-params-grid">
+                        <div class="control-item">
+                            <label>Coverage</label>
+                            <input type="range" id="coverage" min="0.1" max="2.0" step="0.01" value="1.44">
+                            <span id="coverageValue">1.44</span>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label>Max Overlap</label>
+                            <input type="range" id="maxOverlapThreshold" min="0" max="4" step="0.01" value="2.67">
+                            <span id="maxOverlapThresholdValue">2.67</span>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label>Num Tokens</label>
+                            <input type="range" id="numTokens" min="32" max="2048" step="32" value="512">
+                            <span id="numTokensValue">512</span>
+                        </div>
+                    </div>
+                    
+                    <div class="checkboxes-row">
+                        <div class="control-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="dynamicSampling" checked>
+                                Dynamic Sampling
+                            </label>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="binaryMask" checked>
+                                Binary Mask
+                            </label>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="grayscaleBackground" checked>
+                                Mask Background
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="button-row">
+                        <button id="sampleButton" class="demo-button-style">Sample Patches</button>
+                        <button id="inferenceButton" class="demo-button-style">Run Inference</button>
+                        <button id="resetButton" class="demo-button-style">Reset</button>
+                        <button id="debugToggle" class="demo-button-style">Toggle Debug Console</button>
+                    </div>
+                </div>
+
+                <div id="status">Loading ONNX model...</div>
+                
+                <div id="debugConsole"></div>
+            </div>
+        </div>
+        
+        <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.9;">
+            <strong>Note:</strong> The demo runs FLIP-Tiny (0.51M parameters) entirely in your browser using ONNX Runtime Web and WebAssembly. 
+            Performance depends on your hardware. For best results, use a modern browser with hardware acceleration enabled.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Citation</h2>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; font-family: monospace; font-size: 0.9em;">
+            @article{traub2025flip,<br>
+            &nbsp;&nbsp;title={Looking Locally: Object-Centric Vision Transformers as Foundation Models for Efficient Segmentation},<br>
+            &nbsp;&nbsp;author={Traub, Manuel and Butz, Martin V},<br>
+            &nbsp;&nbsp;journal={arXiv preprint arXiv:2502.02763},<br>
+            &nbsp;&nbsp;year={2025}<br>
+            }
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Acknowledgments</h2>
+        <p>
+            This work received funding from the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under
+            Germany's Excellence Strategy – EXC number 2064/1 –Project number 390727645 as well as from the Cyber Valley
+            in Tübingen, CyVy-RF-2020-15. The authors thank the International Max Planck Research School for Intelligent
+            Systems (IMPRS-IS) for supporting Manuel Traub, and the Alexander von Humboldt Foundation for supporting Martin Butz
+        </p>
+    </div>
+
+    <!-- Load ONNX Runtime Web -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.16.3/dist/ort.min.js"></script>
+    
+    <script>
+        // Global variables
+        let wasmModule = null;
+        let onnxSession = null;
+        let imageData = null;
+        let imageWidth = 0;
+        let imageHeight = 0;
+        let originalImage = null;
+        let displayWidth = 0;
+        let displayHeight = 0;
+        let currentPatchData = null;
+        let currentCoordinateData = null;
+        let currentPositionTensor = null;
+
+        // HARD-CODED MODEL PATH - Change this to your model location
+        const MODEL_PATH = 'flipencoder.onnx';  // <-- CHANGE THIS PATH
+        
+        // Maximum pixels per inference chunk (adjust based on your GPU memory)
+        const MAX_PIXELS_PER_CHUNK = 10000;  // ~100x100 pixels
+
+        // Default parameter values
+        const DEFAULT_PARAMS = {
+            muX: -0.14,
+            muY: 0.38,
+            rotation: -3,
+            sigmaX: 0.17,
+            sigmaY: 0.09,
+            coverage: 1.44,
+            maxOverlapThreshold: 2.67,
+            numTokens: 512,
+            dynamicSampling: true,
+            binaryMask: true,
+            grayscaleBackground: true
+        };
+
+        // Calculate optimal display dimensions
+        function calculateOptimalCanvasSize() {
+            if (!originalImage) return;
+            
+            const container = document.querySelector('.demo-canvas-container');
+            const containerWidth = container.clientWidth - 20; // Account for padding
+            const containerHeight = container.clientHeight - 20; // Account for padding
+            
+            // Use most of the available space, but leave some buffer
+            const maxWidth = Math.max(containerWidth * 0.99, 300); // Use 95% of container width
+            const maxHeight = Math.max(containerHeight * 0.99, 200); // Use 90% of container height
+            
+            const aspectRatio = imageWidth / imageHeight;
+            
+            // Calculate dimensions to fit within container while maintaining aspect ratio
+            let width = maxWidth;
+            let height = width / aspectRatio;
+            
+            if (height > maxHeight) {
+                height = maxHeight;
+                width = height * aspectRatio;
+            }
+            
+            displayWidth = width;
+            displayHeight = height;
+            
+            debugLog(`Display dimensions: ${displayWidth.toFixed(0)}x${displayHeight.toFixed(0)}`);
+        }
+
+        // Set canvas display size while maintaining original resolution
+        function setCanvasDisplaySize(canvas) {
+            if (displayWidth && displayHeight) {
+                canvas.width = imageWidth;
+                canvas.height = imageHeight;
+            }
+        }
+
+        // Debug logging
+        const debugLog = (message, data = null) => {
+            console.log(`[FlipNet] ${message}`, data || '');
+            const debugConsole = document.getElementById('debugConsole');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            if (data) {
+                logEntry.textContent += ` ${JSON.stringify(data, null, 2)}`;
+            }
+            debugConsole.appendChild(logEntry);
+            debugConsole.scrollTop = debugConsole.scrollHeight;
+        };
+
+        // Toggle debug console
+        document.getElementById('debugToggle').addEventListener('click', () => {
+            const debugConsole = document.getElementById('debugConsole');
+            const isHidden = getComputedStyle(debugConsole).display === 'none';
+            debugConsole.style.display = isHidden ? 'block' : 'none';
+        });
+
+        // Patch size colors (matching the Python demo)
+        const patchColors = {
+            1: [0, 0, 255],      // Blue
+            2: [0, 255, 0],      // Green
+            4: [255, 0, 0],      // Red
+            8: [0, 255, 255],    // Cyan
+            16: [255, 0, 255],   // Magenta
+            32: [255, 255, 0],   // Yellow
+            64: [0, 128, 255]    // Light Blue
+        };
+
+        // Initialize WASM module
+        async function initWASM() {
+            try {
+                debugLog("Initializing WASM module...");
+                wasmModule = await FlipWASM();
+                wasmModule._wasm_initialize_random(-1); // Random seed
+                debugLog("WASM module loaded successfully");
+                updateStatus("WASM module loaded successfully");
+                
+                // Enable the sample button when WASM is ready
+                document.getElementById('sampleButton').disabled = false;
+            } catch (error) {
+                debugLog("Error loading WASM module", error);
+                updateStatus("Error loading WASM module: " + error.message, true);
+                console.error(error);
+            }
+        }
+
+        // Initialize ONNX Runtime
+        async function initONNX() {
+            try {
+                debugLog("Checking ONNX Runtime...");
+                if (typeof ort === 'undefined') {
+                    throw new Error("ONNX Runtime not loaded. Make sure you're serving the page from a web server, not file://");
+                }
+                
+                debugLog("ONNX Runtime version:", ort.env.versions.webgpu);
+                
+                // Set ONNX Runtime options
+                ort.env.wasm.numThreads = 1;
+                ort.env.wasm.simd = true;
+                
+                debugLog("ONNX Runtime initialized successfully");
+            } catch (error) {
+                debugLog("Error initializing ONNX Runtime", error);
+                updateStatus("Error initializing ONNX Runtime: " + error.message, true);
+                throw error;
+            }
+        }
+
+        // Load ONNX model from URL
+        async function loadONNXModel() {
+            try {
+                debugLog(`Loading ONNX model from: ${MODEL_PATH}`);
+                updateStatus("Loading ONNX model...");
+                
+                // Fetch the model
+                const response = await fetch(MODEL_PATH);
+                if (!response.ok) {
+                    throw new Error(`Failed to load model: ${response.statusText}`);
+                }
+                
+                const modelBuffer = await response.arrayBuffer();
+                debugLog(`Model loaded, size: ${modelBuffer.byteLength} bytes`);
+                
+                // Create inference session
+                const options = {
+                    executionProviders: ['wasm'],
+                    graphOptimizationLevel: 'all'
+                };
+                
+                onnxSession = await ort.InferenceSession.create(modelBuffer, options);
+                
+                // Log model information
+                debugLog("Model inputs:", onnxSession.inputNames);
+                debugLog("Model outputs:", onnxSession.outputNames);
+                
+                updateStatus("ONNX model loaded successfully");
+                
+            } catch (error) {
+                debugLog("Error loading ONNX model", error);
+                updateStatus("Error loading ONNX model: " + error.message, true);
+                console.error(error);
+                throw error;
+            }
+        }
+
+        // Load default image
+        function loadDefaultImage() {
+            try {
+                const demoImg = new Image();
+                demoImg.onload = () => {
+                    originalImage = demoImg;
+                    processImage(demoImg);
+                    updateStatus("Default image loaded");
+                };
+                demoImg.onerror = () => {
+                    debugLog("Could not load default demo image");
+                    updateStatus("Default image not available");
+                };
+                demoImg.src = "./demo-img-small.png";   // relative path to your asset
+            } catch (err) {
+                debugLog("Could not preload demo image", err);
+                updateStatus("Default image not available");
+            }
+        }
+
+        // Reset all parameters to default values
+        function resetParameters() {
+            document.getElementById('muX').value = DEFAULT_PARAMS.muX;
+            document.getElementById('muY').value = DEFAULT_PARAMS.muY;
+            document.getElementById('rotation').value = DEFAULT_PARAMS.rotation;
+            document.getElementById('sigmaX').value = DEFAULT_PARAMS.sigmaX;
+            document.getElementById('sigmaY').value = DEFAULT_PARAMS.sigmaY;
+            document.getElementById('coverage').value = DEFAULT_PARAMS.coverage;
+            document.getElementById('maxOverlapThreshold').value = DEFAULT_PARAMS.maxOverlapThreshold;
+            document.getElementById('numTokens').value = DEFAULT_PARAMS.numTokens;
+            document.getElementById('dynamicSampling').checked = DEFAULT_PARAMS.dynamicSampling;
+            document.getElementById('binaryMask').checked = DEFAULT_PARAMS.binaryMask;
+            document.getElementById('grayscaleBackground').checked = DEFAULT_PARAMS.grayscaleBackground;
+            
+            updateSliderValues();
+            updateOriginalWithEllipse();
+            updateGaussianOverlay();
+            clearPatchesCanvas();
+            clearMaskCanvas();
+        }
+
+        // Update status message
+        function updateStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.style.backgroundColor = isError ? '#f8d7da' : '#d4edda';
+            status.style.color = isError ? '#721c24' : '#155724';
+        }
+
+        // Handle image upload
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        originalImage = img;
+                        processImage(img);
+                        updateStatus("Image loaded successfully");
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Process uploaded image
+        function processImage(img) {
+            const originalWidth = img.width;
+            const originalHeight = img.height;
+            
+            debugLog(`Original image dimensions: ${originalWidth}x${originalHeight}`);
+            
+            // Calculate resize factor to ensure shortest dimension is <= 512
+            const minDimension = Math.min(originalWidth, originalHeight);
+            const maxAllowedSize = 512;
+            let scaleFactor = 1;
+            
+            if (minDimension > maxAllowedSize) {
+                scaleFactor = maxAllowedSize / minDimension;
+                debugLog(`Resizing image with scale factor: ${scaleFactor.toFixed(3)}`);
+            }
+            
+            // Calculate new dimensions
+            imageWidth = Math.round(originalWidth * scaleFactor);
+            imageHeight = Math.round(originalHeight * scaleFactor);
+            
+            debugLog(`Final image dimensions: ${imageWidth}x${imageHeight}`);
+
+            // Calculate optimal display size with a small delay to ensure DOM is ready
+            setTimeout(() => {
+                calculateOptimalCanvasSize();
+                
+                // Create a temporary canvas to resize and extract image data
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = imageWidth;
+                tempCanvas.height = imageHeight;
+                
+                // Draw resized image
+                tempCtx.drawImage(img, 0, 0, originalWidth, originalHeight, 0, 0, imageWidth, imageHeight);
+
+                // Extract image data from resized image
+                const imageDataObj = tempCtx.getImageData(0, 0, imageWidth, imageHeight);
+                imageData = new Uint8Array(imageWidth * imageHeight * 3);
+                
+                // Convert RGBA to RGB
+                let j = 0;
+                for (let i = 0; i < imageDataObj.data.length; i += 4) {
+                    imageData[j++] = imageDataObj.data[i];     // R
+                    imageData[j++] = imageDataObj.data[i + 1]; // G
+                    imageData[j++] = imageDataObj.data[i + 2]; // B
+                }
+
+                // Create a resized image object for display purposes
+                originalImage = new Image();
+                originalImage.onload = function() {
+                    // Update all canvases with proper sizing
+                    updateOriginalWithEllipse();
+                    updateGaussianOverlay();
+                    clearPatchesCanvas();
+                    clearMaskCanvas();
+                };
+                originalImage.src = tempCanvas.toDataURL();
+                
+            }, 50);
+        }
+
+        // Draw ellipse on canvas
+        function drawEllipse(ctx, centerX, centerY, radiusX, radiusY, rotation) {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(rotation);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, radiusX, radiusY, 0, 0, 2 * Math.PI);
+            ctx.restore();
+        }
+
+        // Update original image with ellipse overlay
+        function updateOriginalWithEllipse() {
+            if (!originalImage) return;
+
+            const canvas = document.getElementById('originalCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size and display size
+            setCanvasDisplaySize(canvas);
+
+            // Draw original image
+            ctx.drawImage(originalImage, 0, 0, imageWidth, imageHeight);
+
+            // Get Gaussian parameters
+            const muX = parseFloat(document.getElementById('muX').value);
+            const muY = parseFloat(document.getElementById('muY').value);
+            const sigmaX = parseFloat(document.getElementById('sigmaX').value);
+            const sigmaY = parseFloat(document.getElementById('sigmaY').value);
+            const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+
+            // Convert normalized coordinates to pixel coordinates
+            const centerX = (muX + 1) * imageWidth / 2;
+            const centerY = (muY + 1) * imageHeight / 2;
+            
+            // Calculate ellipse radii for 90% confidence (2σ)
+            const radiusX = 2 * sigmaX * imageWidth / 2;
+            const radiusY = 2 * sigmaY * imageHeight / 2;
+
+            // Draw ellipse outline
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 2;
+            drawEllipse(ctx, centerX, centerY, radiusX, radiusY, rotation);
+            ctx.stroke();
+
+            // Draw center point
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // Generate grid coordinates for a bounding box
+        function generateBoundingBoxCoordinates(yMin, yMax, xMin, xMax, H, W) {
+            const height = yMax - yMin + 1;
+            const width = xMax - xMin + 1;
+            const coords = new Float32Array(height * width * 2);
+            let idx = 0;
+            
+            for (let y = yMin; y <= yMax; y++) {
+                for (let x = xMin; x <= xMax; x++) {
+                    // Normalize to [-1, 1] and scale by dimension ratio
+                    coords[idx++] = ((x / (W - 1)) * 2 - 1) * (W / 256);
+                    coords[idx++] = ((y / (H - 1)) * 2 - 1) * (H / 256);
+                }
+            }
+            
+            return coords;
+        }
+
+        // Predict mask using ONNX model with 5-sigma bounding box optimization
+        async function predictMask(patchData, coordinateData, positionTensor) {
+            if (!onnxSession) {
+                throw new Error("ONNX model not loaded");
+            }
+
+            const H = imageHeight;
+            const W = imageWidth;
+
+            debugLog("Preparing inference inputs...");
+            debugLog(`Image dimensions: ${W}x${H}`);
+
+            // Extract Gaussian parameters from position tensor
+            const muX = positionTensor[0];
+            const muY = positionTensor[1];
+            const sigmaX = positionTensor[2];
+            const sigmaY = positionTensor[3];
+            debugLog(`Gaussian parameters: muX=${muX}, muY=${muY}, sigmaX=${sigmaX}, sigmaY=${sigmaY}`);
+
+            // Convert normalized coordinates to image coordinates
+            const muXImg = (muX + 1) * W / 2;
+            const muYImg = (muY + 1) * H / 2;
+            const sigmaXImg = sigmaX * W / 2;
+            const sigmaYImg = sigmaY * H / 2;
+            debugLog(`Gaussian center: (${muXImg.toFixed(2)}, ${muYImg.toFixed(2)})`);
+            debugLog(`Gaussian sigmas: (${sigmaXImg.toFixed(2)}, ${sigmaYImg.toFixed(2)})`);
+
+            // Compute bounding box using 5-sigma rule
+            const sigmaIso = Math.max(sigmaXImg, sigmaYImg);
+            const xMin = Math.max(0, Math.floor(muXImg - 5 * sigmaIso));
+            const yMin = Math.max(0, Math.floor(muYImg - 5 * sigmaIso));
+            const xMax = Math.min(W - 1, Math.ceil(muXImg + 5 * sigmaIso));
+            const yMax = Math.min(H - 1, Math.ceil(muYImg + 5 * sigmaIso));
+
+            // Check if bounding box is empty
+            if (xMin >= xMax || yMin >= yMax) {
+                debugLog("Empty bounding box, returning zeros");
+                return new Float32Array(H * W);
+            }
+
+            const boxWidth = xMax - xMin + 1;
+            const boxHeight = yMax - yMin + 1;
+            const totalPixels = boxWidth * boxHeight;
+            
+            debugLog(`Bounding box: (${xMin},${yMin}) to (${xMax},${yMax})`);
+            debugLog(`Box size: ${boxWidth}x${boxHeight} = ${totalPixels} pixels`);
+
+            // Create full mask filled with zeros
+            const fullMask = new Float32Array(H * W);
+
+            // Prepare position tensor with scaling
+            const scaledPosition = new Float32Array(6);
+            scaledPosition[0] = positionTensor[0] * (W / 256);
+            scaledPosition[1] = positionTensor[1] * (H / 256);
+            scaledPosition[2] = positionTensor[2] * (W / 256);
+            scaledPosition[3] = positionTensor[3] * (H / 256);
+            scaledPosition[4] = positionTensor[4];
+            scaledPosition[5] = positionTensor[5];
+            
+            debugLog("Scaled position tensor:", Array.from(scaledPosition));
+
+            // Log patch counts
+            for (let i = 0; i < patchData.length; i++) {
+                const patchSize = [1, 2, 4, 8, 16][i];
+                const numPatches = patchData[i].length / (3 * patchSize * patchSize);
+                debugLog(`Patch size ${patchSize}: ${numPatches} patches`);
+            }
+
+            try {
+                // Check if we need to chunk the inference
+                if (totalPixels <= MAX_PIXELS_PER_CHUNK) {
+                    // Single inference for the bounding box
+                    debugLog("Running single inference for bounding box");
+                    
+                    const maskCoordinates = generateBoundingBoxCoordinates(yMin, yMax, xMin, xMax, H, W);
+                    
+                    // Create input tensors
+                    const feeds = {
+                        'patches_p1': new ort.Tensor('float32', patchData[0], [patchData[0].length / 3, 3, 1, 1]),
+                        'patches_p2': new ort.Tensor('float32', patchData[1], [patchData[1].length / 12, 3, 2, 2]),
+                        'patches_p4': new ort.Tensor('float32', patchData[2], [patchData[2].length / 48, 3, 4, 4]),
+                        'patches_p8': new ort.Tensor('float32', patchData[3], [patchData[3].length / 192, 3, 8, 8]),
+                        'patches_p16': new ort.Tensor('float32', patchData[4], [patchData[4].length / 768, 3, 16, 16]),
+                        'coords_p1': new ort.Tensor('float32', coordinateData[0], [coordinateData[0].length / 2, 2]),
+                        'coords_p2': new ort.Tensor('float32', coordinateData[1], [coordinateData[1].length / 2, 2]),
+                        'coords_p4': new ort.Tensor('float32', coordinateData[2], [coordinateData[2].length / 2, 2]),
+                        'coords_p8': new ort.Tensor('float32', coordinateData[3], [coordinateData[3].length / 2, 2]),
+                        'coords_p16': new ort.Tensor('float32', coordinateData[4], [coordinateData[4].length / 2, 2]),
+                        'position': new ort.Tensor('float32', scaledPosition, [1, 6]),
+                        'mask_coordinates': new ort.Tensor('float32', maskCoordinates, [totalPixels, 2])
+                    };
+
+                    const startTime = performance.now();
+                    const results = await onnxSession.run(feeds);
+                    const inferenceTime = performance.now() - startTime;
+                    
+                    debugLog(`Inference completed in ${inferenceTime.toFixed(2)}ms`);
+
+                    const maskLogits = results['mask_logits'].data;
+
+                    // Apply sigmoid and place results in the full mask
+                    let idx = 0;
+                    for (let y = yMin; y <= yMax; y++) {
+                        for (let x = xMin; x <= xMax; x++) {
+                            const maskIdx = y * W + x;
+                            fullMask[maskIdx] = 1 / (1 + Math.exp(-maskLogits[idx]));
+                            idx++;
+                        }
+                    }
+                } else {
+                    // Chunk the inference
+                    debugLog(`Chunking inference into multiple parts (${totalPixels} pixels)`);
+                    updateStatus(`Running inference in chunks (${totalPixels} pixels)...`);
+                    
+                    const rowsPerChunk = Math.floor(MAX_PIXELS_PER_CHUNK / boxWidth);
+                    const numChunks = Math.ceil(boxHeight / rowsPerChunk);
+                    
+                    debugLog(`Processing in ${numChunks} chunks`);
+                    
+                    for (let chunk = 0; chunk < numChunks; chunk++) {
+                        const chunkYMin = yMin + chunk * rowsPerChunk;
+                        const chunkYMax = Math.min(yMin + (chunk + 1) * rowsPerChunk - 1, yMax);
+                        const chunkHeight = chunkYMax - chunkYMin + 1;
+                        const chunkPixels = chunkHeight * boxWidth;
+                        
+                        debugLog(`Chunk ${chunk + 1}/${numChunks}: rows ${chunkYMin}-${chunkYMax} (${chunkPixels} pixels)`);
+                        
+                        const maskCoordinates = generateBoundingBoxCoordinates(chunkYMin, chunkYMax, xMin, xMax, H, W);
+                        
+                        // Create input tensors for this chunk
+                        const feeds = {
+                            'patches_p1': new ort.Tensor('float32', patchData[0], [patchData[0].length / 3, 3, 1, 1]),
+                            'patches_p2': new ort.Tensor('float32', patchData[1], [patchData[1].length / 12, 3, 2, 2]),
+                            'patches_p4': new ort.Tensor('float32', patchData[2], [patchData[2].length / 48, 3, 4, 4]),
+                            'patches_p8': new ort.Tensor('float32', patchData[3], [patchData[3].length / 192, 3, 8, 8]),
+                            'patches_p16': new ort.Tensor('float32', patchData[4], [patchData[4].length / 768, 3, 16, 16]),
+                            'coords_p1': new ort.Tensor('float32', coordinateData[0], [coordinateData[0].length / 2, 2]),
+                            'coords_p2': new ort.Tensor('float32', coordinateData[1], [coordinateData[1].length / 2, 2]),
+                            'coords_p4': new ort.Tensor('float32', coordinateData[2], [coordinateData[2].length / 2, 2]),
+                            'coords_p8': new ort.Tensor('float32', coordinateData[3], [coordinateData[3].length / 2, 2]),
+                            'coords_p16': new ort.Tensor('float32', coordinateData[4], [coordinateData[4].length / 2, 2]),
+                            'position': new ort.Tensor('float32', scaledPosition, [1, 6]),
+                            'mask_coordinates': new ort.Tensor('float32', maskCoordinates, [chunkPixels, 2])
+                        };
+
+                        const startTime = performance.now();
+                        const results = await onnxSession.run(feeds);
+                        const inferenceTime = performance.now() - startTime;
+                        
+                        debugLog(`Chunk ${chunk + 1} inference completed in ${inferenceTime.toFixed(2)}ms`);
+                        updateStatus(`Processing chunk ${chunk + 1}/${numChunks}...`);
+
+                        const maskLogits = results['mask_logits'].data;
+
+                        // Apply sigmoid and place results in the full mask
+                        let idx = 0;
+                        for (let y = chunkYMin; y <= chunkYMax; y++) {
+                            for (let x = xMin; x <= xMax; x++) {
+                                const maskIdx = y * W + x;
+                                fullMask[maskIdx] = 1 / (1 + Math.exp(-maskLogits[idx]));
+                                idx++;
+                            }
+                        }
+                    }
+                }
+
+                debugLog(`Total mask pixels computed: ${totalPixels}`);
+                return fullMask;
+
+            } catch (error) {
+                debugLog("Error during inference:", error);
+                debugLog("Error stack:", error.stack);
+                throw error;
+            }
+        }
+
+        // Update Gaussian overlay
+        function updateGaussianOverlay() {
+            if (!originalImage) return;
+
+            const canvas = document.getElementById('gaussianCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size and display size
+            setCanvasDisplaySize(canvas);
+
+            // Draw original image in grayscale
+            ctx.drawImage(originalImage, 0, 0, imageWidth, imageHeight);
+            
+            // Convert to grayscale
+            const imageData = ctx.getImageData(0, 0, imageWidth, imageHeight);
+            const data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                data[i] = gray;     // R
+                data[i + 1] = gray; // G
+                data[i + 2] = gray; // B
+            }
+            ctx.putImageData(imageData, 0, 0);
+
+            // Get Gaussian parameters
+            const muX = parseFloat(document.getElementById('muX').value);
+            const muY = parseFloat(document.getElementById('muY').value);
+            const sigmaX = parseFloat(document.getElementById('sigmaX').value);
+            const sigmaY = parseFloat(document.getElementById('sigmaY').value);
+            const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+
+            // Create Gaussian heat map
+            const heatmapData = ctx.createImageData(imageWidth, imageHeight);
+            const heatData = heatmapData.data;
+
+            // Convert normalized coordinates to pixel coordinates
+            const centerX = (muX + 1) * imageWidth / 2;
+            const centerY = (muY + 1) * imageHeight / 2;
+            const scaleX = sigmaX * imageWidth / 2;
+            const scaleY = sigmaY * imageHeight / 2;
+
+            const cosTheta = Math.cos(rotation);
+            const sinTheta = Math.sin(rotation);
+
+            let maxValue = 0;
+            const values = new Float32Array(imageWidth * imageHeight);
+
+            // Calculate Gaussian values
+            for (let y = 0; y < imageHeight; y++) {
+                for (let x = 0; x < imageWidth; x++) {
+                    // Translate to center
+                    const dx = x - centerX;
+                    const dy = y - centerY;
+
+                    // Rotate
+                    const xRot = cosTheta * dx + sinTheta * dy;
+                    const yRot = -sinTheta * dx + cosTheta * dy;
+
+                    // Calculate Gaussian
+                    const value = Math.exp(-0.5 * (
+                        (xRot * xRot) / (scaleX * scaleX) +
+                        (yRot * yRot) / (scaleY * scaleY)
+                    ));
+
+                    values[y * imageWidth + x] = value;
+                    maxValue = Math.max(maxValue, value);
+                }
+            }
+
+            // Apply colormap and blend with grayscale
+            for (let i = 0; i < values.length; i++) {
+                const value = values[i] / maxValue;
+                const idx = i * 4;
+
+                // Jet colormap approximation
+                let r, g, b;
+                if (value < 0.25) {
+                    r = 0;
+                    g = value * 4;
+                    b = 1;
+                } else if (value < 0.5) {
+                    r = 0;
+                    g = 1;
+                    b = 1 - (value - 0.25) * 4;
+                } else if (value < 0.75) {
+                    r = (value - 0.5) * 4;
+                    g = 1;
+                    b = 0;
+                } else {
+                    r = 1;
+                    g = 1 - (value - 0.75) * 4;
+                    b = 0;
+                }
+
+                const alpha = 0.5 * value;
+                const gray = data[idx]; // Current grayscale value
+                heatData[idx] = (1 - alpha) * gray + alpha * r * 255;
+                heatData[idx + 1] = (1 - alpha) * gray + alpha * g * 255;
+                heatData[idx + 2] = (1 - alpha) * gray + alpha * b * 255;
+                heatData[idx + 3] = 255;
+            }
+
+            ctx.putImageData(heatmapData, 0, 0);
+        }
+
+        // Clear patches canvas
+        function clearPatchesCanvas() {
+            const canvas = document.getElementById('patchesCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Reset patch data
+            currentPatchData = null;
+            currentCoordinateData = null;
+            currentPositionTensor = null;
+            
+            // Disable inference button until patches are sampled again
+            document.getElementById('inferenceButton').disabled = true;
+            
+            if (imageWidth && imageHeight) {
+                setCanvasDisplaySize(canvas);
+            } else {
+                canvas.width = 100;
+                canvas.height = 100;
+                canvas.style.width = '100px';
+                canvas.style.height = '100px';
+            }
+            
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Clear mask canvas
+        function clearMaskCanvas() {
+            const canvas = document.getElementById('maskCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Reset current mask
+            currentMask = null;
+            
+            if (imageWidth && imageHeight) {
+                setCanvasDisplaySize(canvas);
+            } else {
+                canvas.width = 100;
+                canvas.height = 100;
+                canvas.style.width = '100px';
+                canvas.style.height = '100px';
+            }
+            
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Sample patches only
+        async function samplePatches() {
+            // throw away the patch/coord buffers of the previous pass
+            try {
+                debugLog("Releasing previous sampled patches");
+                wasmModule._wasm_cleanup();
+            } catch (error) {
+                debugLog("Error releasing previous patches:", error);
+            }
+
+            if (!wasmModule || !imageData) {
+                updateStatus("Please wait for WASM to load and upload an image", true);
+                return false;
+            }
+
+            updateStatus("Sampling patches...");
+            debugLog("Starting patch sampling...");
+
+            try {
+                // Get parameters
+                const muX = parseFloat(document.getElementById('muX').value);
+                const muY = parseFloat(document.getElementById('muY').value);
+                const raw_sigmaX = parseFloat(document.getElementById('sigmaX').value);
+                const raw_sigmaY = parseFloat(document.getElementById('sigmaY').value);
+                const rotation = parseFloat(document.getElementById('rotation').value) * Math.PI / 180;
+                const numTokens = parseInt(document.getElementById('numTokens').value);
+                const coverage = parseFloat(document.getElementById('coverage').value);
+                const maxOverlapThreshold = parseFloat(document.getElementById('maxOverlapThreshold').value);
+
+                debugLog("Parameters:", { muX, muY, raw_sigmaX, raw_sigmaY, rotation: rotation * 180 / Math.PI, numTokens, coverage, maxOverlapThreshold });
+
+                // Convert rotation to rot_a, rot_b
+                const rotA = Math.cos(-rotation);  // Note: negative rotation to match Python convention
+                const rotB = Math.sin(-rotation);
+
+                // Define patch sizes (matching Python demo)
+                const patchSizes = [1, 2, 4, 8, 16];
+                const numPatchSizes = patchSizes.length;
+
+                // Allocate memory for image data
+                const imageSize = imageWidth * imageHeight * 3;
+                const imagePtr = wasmModule._malloc(imageSize);
+                wasmModule.HEAPU8.set(imageData, imagePtr);
+
+                // Allocate memory for patch sizes
+                const patchSizesPtr = wasmModule._malloc(numPatchSizes * 4);
+                for (let i = 0; i < numPatchSizes; i++) {
+                    wasmModule.HEAPF32[patchSizesPtr / 4 + i] = patchSizes[i];
+                }
+
+                // Apply transformation 
+                const sigmaX = raw_sigmaX * Math.sqrt(0.5);
+                const sigmaY = raw_sigmaY * Math.sqrt(0.5);
+
+                debugLog("Calling WASM sample function...");
+
+                // Call WASM function
+                const result = wasmModule._wasm_sample_continuous_patches(
+                    imagePtr, imageHeight, imageWidth, 3,
+                    muX, muY, sigmaX, sigmaY, rotA, rotB,
+                    numTokens,
+                    patchSizesPtr, numPatchSizes,
+                    maxOverlapThreshold,
+                    coverage
+                );
+
+                if (result < 0) {
+                    throw new Error("Failed to sample patches");
+                }
+
+                debugLog("Patch sampling completed, extracting data...");
+
+                // Extract patch data and coordinates
+                const patchData = [];
+                const coordinateData = [];
+
+                for (let resIdx = 0; resIdx < numPatchSizes; resIdx++) {
+                    const patchSize = patchSizes[resIdx];
+                    const patchCount = wasmModule._wasm_get_patch_count(resIdx);
+                    
+                    debugLog(`Resolution ${resIdx} (${patchSize}x${patchSize}): ${patchCount} patches`);
+                    
+                    if (patchCount > 0) {
+                        const patchesPtr = wasmModule._wasm_get_patches(resIdx);
+                        const coordsPtr = wasmModule._wasm_get_coordinates(resIdx);
+
+                        // Extract patches (convert uint8 to float32 and normalize)
+                        const patchElements = patchCount * patchSize * patchSize * 3;
+                        const patches = new Float32Array(patchElements);
+                        for (let i = 0; i < patchElements; i++) {
+                            patches[i] = wasmModule.HEAPU8[patchesPtr + i] / 255.0;
+                        }
+                        patchData.push(patches);
+
+                        // Extract coordinates
+                        const coords = new Float32Array(patchCount * 2);
+                        for (let i = 0; i < patchCount * 2; i++) {
+                            coords[i] = wasmModule.HEAPF32[coordsPtr / 4 + i];
+                        }
+                        coordinateData.push(coords);
+                    } else {
+                        // Empty arrays for this resolution
+                        patchData.push(new Float32Array(0));
+                        coordinateData.push(new Float32Array(0));
+                    }
+                }
+
+                // Store globally for inference
+                currentPatchData = patchData;
+                currentCoordinateData = coordinateData;
+                
+                // Create position tensor
+                const positionTensor = new Float32Array([muX, muY, sigmaX, sigmaY, rotA, rotB]);
+                currentPositionTensor = positionTensor.slice();
+
+                // Visualize patches
+                visualizePatches(patchSizes);
+
+                // Clean up
+                wasmModule._free(imagePtr);
+                wasmModule._free(patchSizesPtr);
+
+                updateStatus("Patch sampling completed successfully");
+                
+                // Enable inference button
+                document.getElementById('inferenceButton').disabled = false;
+                
+                return true;
+
+            } catch (error) {
+                debugLog("Error during patch sampling:", error);
+                debugLog("Error stack:", error.stack);
+                updateStatus("Error during patch sampling: " + error.message, true);
+                console.error(error);
+                return false;
+            }
+        }
+
+        // Run inference only
+        async function runInference() {
+            if (!onnxSession) {
+                updateStatus("Please wait for ONNX model to load", true);
+                return;
+            }
+            
+            if (!currentPatchData || !currentCoordinateData || !currentPositionTensor) {
+                updateStatus("Please sample patches first", true);
+                return;
+            }
+
+            updateStatus("Running inference...");
+            debugLog("Starting inference with sampled patches...");
+
+            try {
+                // Run inference
+                const mask = await predictMask(currentPatchData, currentCoordinateData, currentPositionTensor);
+
+                debugLog("Inference completed, visualizing mask...");
+
+                // Store mask for toggle functionality and visualize
+                currentMask = mask;
+                visualizeMask(mask);
+
+                updateStatus("Inference completed successfully");
+
+            } catch (error) {
+                debugLog("Error during inference:", error);
+                debugLog("Error stack:", error.stack);
+                updateStatus("Error during inference: " + error.message, true);
+                console.error(error);
+            }
+        }
+
+        // Visualize sampled patches
+        function visualizePatches(patchSizes) {
+            const canvas = document.getElementById('patchesCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size and display size
+            setCanvasDisplaySize(canvas);
+            
+            // Check if any patches were sampled
+            let totalPatches = 0;
+            for (let i = 0; i < patchSizes.length; i++) {
+                totalPatches += wasmModule._wasm_get_patch_count(i);
+            }
+            
+            if (totalPatches === 0) {
+                ctx.fillStyle = '#f0f0f0';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#666';
+                ctx.font = '20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No patches sampled', canvas.width / 2, canvas.height / 2);
+                updateLegend([]);
+                return;
+            }
+
+            // Convert to grayscale
+            const grayData = new Uint8ClampedArray(imageWidth * imageHeight * 4);
+            for (let i = 0; i < imageWidth * imageHeight; i++) {
+                const gray = 0.299 * imageData[i * 3] + 0.587 * imageData[i * 3 + 1] + 0.114 * imageData[i * 3 + 2];
+                grayData[i * 4] = gray;
+                grayData[i * 4 + 1] = gray;
+                grayData[i * 4 + 2] = gray;
+                grayData[i * 4 + 3] = 255;
+            }
+            const grayImageData = new ImageData(grayData, imageWidth, imageHeight);
+            ctx.putImageData(grayImageData, 0, 0);
+
+            // Draw patches
+            const blendAlpha = 0.5;
+            
+            for (let resIdx = 0; resIdx < patchSizes.length; resIdx++) {
+                const patchSize = patchSizes[resIdx];
+                const patchCount = wasmModule._wasm_get_patch_count(resIdx);
+                
+                if (patchCount === 0) continue;
+
+                const coordsPtr = wasmModule._wasm_get_coordinates(resIdx);
+                const patchesPtr = wasmModule._wasm_get_patches(resIdx);
+
+                const color = patchColors[patchSize] || [128, 128, 128];
+
+                for (let i = 0; i < patchCount; i++) {
+                    // Get coordinates (normalized)
+                    const x = wasmModule.HEAPF32[coordsPtr / 4 + i * 2];
+                    const y = wasmModule.HEAPF32[coordsPtr / 4 + i * 2 + 1];
+
+                    // Convert to pixel coordinates
+                    const cx = x * 128 + imageWidth / 2;
+                    const cy = y * 128 + imageHeight / 2;
+                    const tlx = Math.floor(cx - patchSize / 2);
+                    const tly = Math.floor(cy - patchSize / 2);
+
+                    // Skip if outside bounds
+                    if (tlx < 0 || tly < 0 || tlx + patchSize > imageWidth || tly + patchSize > imageHeight) {
+                        continue;
+                    }
+
+                    // Draw colored patch
+                    ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${blendAlpha})`;
+                    ctx.fillRect(tlx, tly, patchSize, patchSize);
+                }
+            }
+
+            // Update legend
+            updateLegend(patchSizes);
+        }
+
+        // Visualize predicted mask
+        function visualizeMask(mask) {
+            const canvas = document.getElementById('maskCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size and display size
+            setCanvasDisplaySize(canvas);
+
+            // Get visualization options
+            const binaryMask = document.getElementById('binaryMask').checked;
+            const grayscaleBackground = document.getElementById('grayscaleBackground').checked;
+
+            // Create mask visualization
+            const maskData = ctx.createImageData(imageWidth, imageHeight);
+            const data = maskData.data;
+
+            if (grayscaleBackground) {
+                // First, draw grayscale background
+                for (let i = 0; i < imageWidth * imageHeight; i++) {
+                    const idx = i * 4;
+                    const gray = 0.299 * imageData[i * 3] + 0.587 * imageData[i * 3 + 1] + 0.114 * imageData[i * 3 + 2];
+                    data[idx] = gray;     // R
+                    data[idx + 1] = gray; // G
+                    data[idx + 2] = gray; // B
+                    data[idx + 3] = 255;  // A
+                }
+
+                // Then overlay the mask
+                for (let i = 0; i < mask.length; i++) {
+                    const idx = i * 4;
+                    let intensity;
+                    
+                    if (binaryMask) {
+                        intensity = mask[i] > 0.5 ? 1.0 : 0.0;
+                    } else {
+                        intensity = Math.pow(mask[i], 2); // Square for better visualization
+                    }
+                    
+                    if (intensity > 0) {
+                        const alpha = 0.6; // Overlay transparency
+                        const gray = data[idx]; // Current grayscale value
+                        
+                        // Blend green mask with grayscale background
+                        data[idx] = (1 - alpha) * gray + alpha * 0;           // R
+                        data[idx + 1] = (1 - alpha) * gray + alpha * (intensity * 255); // G
+                        data[idx + 2] = (1 - alpha) * gray + alpha * 0;       // B
+                        data[idx + 3] = 255;                                  // A
+                    }
+                }
+            } else {
+                // Pure mask visualization on transparent/black background
+                for (let i = 0; i < mask.length; i++) {
+                    const idx = i * 4;
+                    let intensity;
+                    
+                    if (binaryMask) {
+                        intensity = mask[i] > 0.5 ? 1.0 : 0.0;
+                    } else {
+                        intensity = Math.pow(mask[i], 2); // Square for better visualization
+                    }
+                    
+                    data[idx] = 0;                          // R
+                    data[idx + 1] = intensity * 255;        // G
+                    data[idx + 2] = 0;                      // B
+                    data[idx + 3] = 255;                    // A
+                }
+            }
+
+            ctx.putImageData(maskData, 0, 0);
+        }
+
+        // Update patch size legend
+        function updateLegend(patchSizes) {
+            const legend = document.getElementById('patchLegend');
+            legend.innerHTML = '';
+
+            for (const size of patchSizes) {
+                const patchCount = wasmModule._wasm_get_patch_count(patchSizes.indexOf(size));
+                if (patchCount > 0) {
+                    const color = patchColors[size] || [128, 128, 128];
+                    const item = document.createElement('div');
+                    item.className = 'legend-item';
+                    
+                    const colorBox = document.createElement('div');
+                    colorBox.className = 'legend-color';
+                    colorBox.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+                    
+                    const label = document.createElement('span');
+                    label.textContent = `${size}×${size} (${patchCount})`;
+                    
+                    item.appendChild(colorBox);
+                    item.appendChild(label);
+                    legend.appendChild(item);
+                }
+            }
+        }
+
+        // Handle click on original image with ellipse
+        document.getElementById('originalCanvas').addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width;
+            const y = (e.clientY - rect.top) / rect.height;
+
+            // Convert to normalized coordinates
+            const muX = x * 2 - 1;
+            const muY = y * 2 - 1;
+
+            // Update sliders
+            document.getElementById('muX').value = muX;
+            document.getElementById('muY').value = muY;
+            updateSliderValues();
+            updateOriginalWithEllipse();
+            updateGaussianOverlay();
+        });
+
+        // Update slider value displays
+        function updateSliderValues() {
+            document.getElementById('muXValue').textContent = parseFloat(document.getElementById('muX').value).toFixed(2);
+            document.getElementById('muYValue').textContent = parseFloat(document.getElementById('muY').value).toFixed(2);
+            document.getElementById('sigmaXValue').textContent = parseFloat(document.getElementById('sigmaX').value).toFixed(2);
+            document.getElementById('sigmaYValue').textContent = parseFloat(document.getElementById('sigmaY').value).toFixed(2);
+            document.getElementById('rotationValue').textContent = document.getElementById('rotation').value + '°';
+            document.getElementById('numTokensValue').textContent = document.getElementById('numTokens').value;
+            document.getElementById('coverageValue').textContent = parseFloat(document.getElementById('coverage').value).toFixed(2);
+            document.getElementById('maxOverlapThresholdValue').textContent = parseFloat(document.getElementById('maxOverlapThreshold').value).toFixed(2);
+        }
+
+        // Add event listeners for sliders
+        ['muX', 'muY', 'sigmaX', 'sigmaY', 'rotation'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                updateSliderValues();
+                updateOriginalWithEllipse();
+                updateGaussianOverlay();
+                
+                // Dynamic sampling for Gaussian parameters
+                if (document.getElementById('dynamicSampling').checked && imageData && wasmModule) {
+                    samplePatches();
+                }
+            });
+        });
+
+        ['numTokens', 'coverage', 'maxOverlapThreshold'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() {
+                updateSliderValues();
+                
+                // Dynamic sampling for patch parameters
+                if (document.getElementById('dynamicSampling').checked && imageData && wasmModule) {
+                    samplePatches();
+                }
+            });
+        });
+
+        // Add event listeners for mask visualization toggles
+        let currentMask = null; // Store the current mask for re-rendering
+        
+        document.getElementById('binaryMask').addEventListener('change', function() {
+            if (currentMask) {
+                visualizeMask(currentMask);
+            }
+        });
+        
+        document.getElementById('grayscaleBackground').addEventListener('change', function() {
+            if (currentMask) {
+                visualizeMask(currentMask);
+            }
+        });
+
+        // Sample button
+        document.getElementById('sampleButton').addEventListener('click', samplePatches);
+        document.getElementById('sampleButton').disabled = true; // Initially disabled until WASM is loaded
+        
+        // Inference button
+        document.getElementById('inferenceButton').addEventListener('click', runInference);
+        document.getElementById('inferenceButton').disabled = true; // Initially disabled until patches are sampled
+
+        // Reset button
+        document.getElementById('resetButton').addEventListener('click', function() {
+            resetParameters();
+            loadDefaultImage();
+            updateStatus("Parameters and image reset to defaults");
+        });
+
+        // Initialize everything on page load
+        window.addEventListener('load', async function() {
+            try {
+                await initONNX();
+                await initWASM();
+                await loadONNXModel();
+                loadDefaultImage();
+                updateSliderValues();
+            } catch (error) {
+                debugLog("Initialization error:", error);
+                updateStatus("Failed to initialize: " + error.message, true);
+            }
+        });
+
+        // Handle window resize to recalculate canvas sizes
+        window.addEventListener('resize', function() {
+            if (originalImage) {
+                // Add a small delay to ensure container dimensions are updated
+                setTimeout(() => {
+                    calculateOptimalCanvasSize();
+                    updateOriginalWithEllipse();
+                    updateGaussianOverlay();
+                }, 100);
+            }
+        });
+    </script>
+
+    <!-- Load the WASM module -->
+    <script src="flip_wasm.js"></script>
+</body>
+</html>
