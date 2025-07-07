@@ -3,7 +3,7 @@
 [![Paper](https://img.shields.io/badge/Paper-arXiv-red)](https://arxiv.org/pdf/2502.02763)
 [![Demo](https://img.shields.io/badge/Demo-Interactive-blue)](https://cognitivemodeling.github.io/FLIP/#demo)
 [![Models](https://img.shields.io/badge/Models-Download-green)](https://nc.mlcloud.uni-tuebingen.de/index.php/s/FqFzp5LEz8HYtzx)
-[![Dataset](https://img.shields.io/badge/Dataset-ObjaScale-orange)](TODO_DATASET_LINK)
+[![Dataset](https://img.shields.io/badge/Dataset-ObjaScale-orange)](https://nc.mlcloud.uni-tuebingen.de/index.php/s/4CNc5XNc88NWXZK)
 [![Project Page](https://img.shields.io/badge/Project%20Page-FLIP-black)](https://cognitivemodeling.github.io/FLIP)
 
 > We introduce a fovea-like input patching (**FLIP**) approach for object-centric vision that achieves state-of-the-art segmentation performance with orders of magnitude fewer parameters than existing foundation models. Explore the project page at [cognitivemodeling.github.io/FLIP](https://cognitivemodeling.github.io/FLIP).
