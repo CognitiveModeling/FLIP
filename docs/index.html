@@ -678,31 +678,31 @@
                     <div class="top-controls-grid">
                         <div class="control-item">
                             <label>Center X</label>
-                            <input type="range" id="muX" min="-1" max="1" step="0.01" value="-0.14">
+                            <input type="range" id="muX" min="-1" max="1" step="0.001" value="0.044">
                             <span id="muXValue">0.00</span>
                         </div>
                         
                         <div class="control-item">
                             <label>Center Y</label>
-                            <input type="range" id="muY" min="-1" max="1" step="0.01" value="0.38">
+                            <input type="range" id="muY" min="-1" max="1" step="0.001" value="0.068">
                             <span id="muYValue">0.00</span>
                         </div>
                         
                         <div class="control-item">
                             <label>Rotation</label>
-                            <input type="range" id="rotation" min="-180" max="180" step="1" value="-3">
+                            <input type="range" id="rotation" min="-180" max="180" step="1" value="180">
                             <span id="rotationValue">0°</span>
                         </div>
                         
                         <div class="control-item">
                             <label>Sigma X</label>
-                            <input type="range" id="sigmaX" min="0.01" max="0.5" step="0.01" value="0.17">
+                            <input type="range" id="sigmaX" min="0.01" max="0.5" step="0.001" value="0.055">
                             <span id="sigmaXValue">0.20</span>
                         </div>
                         
                         <div class="control-item">
                             <label>Sigma Y</label>
-                            <input type="range" id="sigmaY" min="0.01" max="0.5" step="0.01" value="0.09">
+                            <input type="range" id="sigmaY" min="0.01" max="0.5" step="0.001" value="0.093">
                             <span id="sigmaYValue">0.20</span>
                         </div>
                         
@@ -854,11 +854,11 @@
 
         // Default parameter values
         const DEFAULT_PARAMS = {
-            muX: -0.14,
-            muY: 0.38,
-            rotation: -3,
-            sigmaX: 0.17,
-            sigmaY: 0.09,
+            muX: 0.044,
+            muY: 0.068,
+            rotation: 180,
+            sigmaX: 0.055,
+            sigmaY: 0.094,
             coverage: 1.44,
             maxOverlapThreshold: 2.67,
             numTokens: 512,
@@ -1026,7 +1026,7 @@
                     debugLog("Could not load default demo image");
                     updateStatus("Default image not available");
                 };
-                demoImg.src = "./demo-img-small.png";   // relative path to your asset
+                demoImg.src = "./demo-img-small.jpg";   // relative path to your asset
             } catch (err) {
                 debugLog("Could not preload demo image", err);
                 updateStatus("Default image not available");
@@ -1590,8 +1590,8 @@
                 }
 
                 // Apply transformation 
-                const sigmaX = raw_sigmaX * Math.sqrt(0.5);
-                const sigmaY = raw_sigmaY * Math.sqrt(0.5);
+                const sigmaX = raw_sigmaX;
+                const sigmaY = raw_sigmaY;
 
                 debugLog("Calling WASM sample function...");
 
