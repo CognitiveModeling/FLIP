@@ -211,6 +211,59 @@
         #originalCanvas {
             cursor: crosshair;
         }
+        
+        /* Model selection and file input styling */
+        #fileInput {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .model-selection {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .model-selection label {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        #modelSelect {
+            padding: 8px 12px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            background: white;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        #modelSelect:hover {
+            border-color: #2980b9;
+        }
+        
+        #modelSelect:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        .file-upload {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-upload label {
+            font-weight: bold;
+            color: #333;
+        }
+        
         #topControls, #bottomControls {
             margin-bottom: 20px;
             padding: 15px;
@@ -265,6 +318,12 @@
             .bottom-params-grid, .checkboxes-row {
                 grid-template-columns: 1fr 1fr;
             }
+            
+            #fileInput {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
         }
         
         @media (max-width: 600px) {
@@ -276,6 +335,12 @@
                 margin: 2px;
                 font-size: 12px;
                 padding: 8px 12px;
+            }
+            
+            #fileInput {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
             }
         }
         
@@ -341,10 +406,6 @@
             cursor: not-allowed;
         }
         
-        #fileInput {
-            margin-bottom: 20px;
-        }
-        
         .demo-legend {
             margin-top: 10px;
             display: flex;
@@ -383,6 +444,79 @@
             margin-top: 0;
             font-size: 14px;
             background-color: #6c757d;
+        }
+
+        /* Progress bar styles */
+        #progressContainer {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .progress-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #495057;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #007bff 0%, #0056b3 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                -45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 20px 20px;
+            animation: progressStripes 1s linear infinite;
+        }
+        
+        @keyframes progressStripes {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 20px 0;
+            }
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-family: monospace;
+            font-size: 14px;
+            color: #6c757d;
         }
 
         @media (max-width: 768px) {
@@ -656,9 +790,9 @@
     </div>
 
     <div class="section demo-section" id="demo">
-        <h2>🚀 Flip-Tiny Interactive Demo</h2>
+        <h2>🚀 FLIP Interactive Demo</h2>
         <p>
-            Try FLIP-Tiny directly in your browser! Upload an image, click on the Ellipse view to set the Gaussian center, 
+            Try FLIP models directly in your browser! Select a model variant, upload an image, click on the Ellipse view to set the Gaussian center, 
             adjust parameters using the control grid, and see real-time object segmentation. Ensure the selected object fits tightly within the ellipse for optimal results. 
             Click "Sample Patches" to extract patches, then "Run Inference" to predict the mask. The ellipse shows the (2σ) area of the 2D Gaussian input prompt. 
         </p>
@@ -666,7 +800,16 @@
             <div class="demo-container">
                 
                 <div id="fileInput">
-                    <div>
+                    <div class="model-selection">
+                        <label for="modelSelect">Model:</label>
+                        <select id="modelSelect">
+                            <option value="tiny">FLIP-Tiny (0.51M params)</option>
+                            <option value="small" selected>FLIP-Small (2.3M params)</option>
+                            <option value="middle">FLIP-Middle (11.5M params)</option>
+                            <option value="large">FLIP-Large (96.6M params)</option>
+                        </select>
+                    </div>
+                    <div class="file-upload">
                         <label for="imageUpload">Upload an image:</label>
                         <input type="file" id="imageUpload" accept="image/*">
                     </div>
@@ -793,15 +936,25 @@
                     </div>
                 </div>
 
-                <div id="status">Loading ONNX model...</div>
+                <div id="progressContainer" style="display: none;">
+                    <div class="progress-label">Processing...</div>
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="progressText">Initializing...</span>
+                    </div>
+                </div>
+
+                <div id="status">Loading ONNX models...</div>
                 
                 <div id="debugConsole"></div>
             </div>
         </div>
         
         <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.9;">
-            <strong>Note:</strong> The demo runs FLIP-Tiny (0.51M parameters) entirely in your browser using ONNX Runtime Web and WebAssembly. 
-            Performance depends on your hardware. For best results, use a modern browser with hardware acceleration enabled.
+            <strong>Note:</strong> The demo runs FLIP models entirely in your browser using ONNX Runtime Web and WebAssembly. 
+            Performance depends on your hardware and the selected model size. For best results, use a modern browser with hardware acceleration enabled.
         </p>
     </div>
 
@@ -833,7 +986,8 @@
     <script>
         // Global variables
         let wasmModule = null;
-        let onnxSession = null;
+        let encoderSession = null;
+        let predictorSession = null;
         let imageData = null;
         let imageWidth = 0;
         let imageHeight = 0;
@@ -843,12 +997,38 @@
         let currentPatchData = null;
         let currentCoordinateData = null;
         let currentPositionTensor = null;
+        let currentKCached = null;
+        let currentVCached = null;
+        let currentModelVariant = 'small'; // Default model
 
-        // HARD-CODED MODEL PATH - Change this to your model location
-        const MODEL_PATH = 'flipencoder.onnx';  // <-- CHANGE THIS PATH
+        // Model information mapping
+        const MODEL_INFO = {
+            'tiny': { name: 'FLIP-Tiny', params: '0.51M' },
+            'small': { name: 'FLIP-Small', params: '2.3M' },
+            'middle': { name: 'FLIP-Middle', params: '11.5M' },
+            'large': { name: 'FLIP-Large', params: '96.6M' }
+        };
+
+        // Model-specific chunk sizes (max pixels per chunk)
+        const MODEL_CHUNK_SIZES = {
+            'tiny': 10000,
+            'small': 5000,
+            'middle': 2500,
+            'large': 1250
+        };
         
-        // Maximum pixels per inference chunk (adjust based on your GPU memory)
-        const MAX_PIXELS_PER_CHUNK = 10000;  // ~100x100 pixels
+        // Get chunk size for current model
+        function getCurrentChunkSize() {
+            return MODEL_CHUNK_SIZES[currentModelVariant] || 10000;
+        }
+
+        // Get model file paths
+        function getModelPaths(variant) {
+            return {
+                encoder: `https://manuel-traub.de/onnx/flip-encoder-${variant}.onnx`,
+                predictor: `https://manuel-traub.de/onnx/flip-predictor-${variant}.onnx`
+            };
+        }
 
         // Default parameter values
         const DEFAULT_PARAMS = {
@@ -923,6 +1103,47 @@
             debugConsole.style.display = isHidden ? 'block' : 'none';
         });
 
+        // Progress bar functions
+        function showProgressBar(label, total = null, quantity = 'pixels') {
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressLabel = document.querySelector('.progress-label');
+            
+            progressContainer.style.display = 'block';
+            progressBar.style.width = '0%';
+            progressLabel.textContent = label;
+            
+            if (total) {
+                progressText.textContent = `0 / ${total.toLocaleString()} ${quantity}`;
+            } else {
+                progressText.textContent = 'Initializing...';
+            }
+        }
+        
+        function updateProgressBar(processed, total, label = null, quantity = 'pixels') {
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressLabel = document.querySelector('.progress-label');
+            
+            if (label) {
+                progressLabel.textContent = label;
+            }
+            
+            if (total > 0) {
+                const percentage = (processed / total) * 100;
+                progressBar.style.width = `${percentage}%`;
+                progressText.textContent = `${processed.toLocaleString()} / ${total.toLocaleString()} ${quantity}`;
+            } else {
+                progressText.textContent = 'Processing...';
+            }
+        }
+        
+        function hideProgressBar() {
+            const progressContainer = document.getElementById('progressContainer');
+            progressContainer.style.display = 'none';
+        }
+
         // Patch size colors (matching the Python demo)
         const patchColors = {
             1: [0, 0, 255],      // Blue
@@ -974,42 +1195,109 @@
             }
         }
 
-        // Load ONNX model from URL
-        async function loadONNXModel() {
+        // Load ONNX models (encoder and predictor)
+        async function loadONNXModels(variant = null) {
             try {
-                debugLog(`Loading ONNX model from: ${MODEL_PATH}`);
-                updateStatus("Loading ONNX model...");
+                const modelVariant = variant || currentModelVariant;
+                const modelInfo = MODEL_INFO[modelVariant];
+                const modelPaths = getModelPaths(modelVariant);
                 
-                // Fetch the model
-                const response = await fetch(MODEL_PATH);
-                if (!response.ok) {
-                    throw new Error(`Failed to load model: ${response.statusText}`);
+                debugLog(`Loading ONNX models: ${modelVariant}`);
+                updateStatus(`Loading ${modelInfo.name} (${modelInfo.params} parameters)...`);
+                
+                // Close existing sessions if any
+                if (encoderSession) {
+                    debugLog("Closing existing encoder session");
+                    encoderSession = null;
+                }
+                if (predictorSession) {
+                    debugLog("Closing existing predictor session");
+                    predictorSession = null;
                 }
                 
-                const modelBuffer = await response.arrayBuffer();
-                debugLog(`Model loaded, size: ${modelBuffer.byteLength} bytes`);
+                // Show progress for model loading
+                showProgressBar("Loading encoder model...", 2, "ONNX models");
                 
-                // Create inference session
+                // Fetch the encoder model
+                const encoderResponse = await fetch(modelPaths.encoder);
+                if (!encoderResponse.ok) {
+                    throw new Error(`Failed to load encoder: ${encoderResponse.statusText}`);
+                }
+                
+                const encoderBuffer = await encoderResponse.arrayBuffer();
+                debugLog(`Encoder loaded, size: ${encoderBuffer.byteLength} bytes`);
+                
+                updateProgressBar(1, 2, "Loading predictor model...", "ONNX models");
+                
+                // Fetch the predictor model
+                const predictorResponse = await fetch(modelPaths.predictor);
+                if (!predictorResponse.ok) {
+                    throw new Error(`Failed to load predictor: ${predictorResponse.statusText}`);
+                }
+                
+                const predictorBuffer = await predictorResponse.arrayBuffer();
+                debugLog(`Predictor loaded, size: ${predictorBuffer.byteLength} bytes`);
+                
+                updateProgressBar(2, 2, "Creating inference sessions...", "ONNX models");
+                
+                // Create inference sessions
                 const options = {
                     executionProviders: ['wasm'],
                     graphOptimizationLevel: 'all'
                 };
                 
-                onnxSession = await ort.InferenceSession.create(modelBuffer, options);
+                encoderSession = await ort.InferenceSession.create(encoderBuffer, options);
+                predictorSession = await ort.InferenceSession.create(predictorBuffer, options);
                 
                 // Log model information
-                debugLog("Model inputs:", onnxSession.inputNames);
-                debugLog("Model outputs:", onnxSession.outputNames);
+                debugLog("Encoder inputs:", encoderSession.inputNames);
+                debugLog("Encoder outputs:", encoderSession.outputNames);
+                debugLog("Predictor inputs:", predictorSession.inputNames);
+                debugLog("Predictor outputs:", predictorSession.outputNames);
                 
-                updateStatus("ONNX model loaded successfully");
+                // Update current model variant
+                currentModelVariant = modelVariant;
+
+                // Clear cached data and previous inference results when switching models
+                currentKCached = null;
+                currentVCached = null;
+                if (imageWidth && imageHeight) {
+                    clearPatchesCanvas();
+                    clearMaskCanvas();
+                }
+                
+                hideProgressBar();
+                updateStatus(`${modelInfo.name} (${modelInfo.params} parameters) loaded successfully`);
                 
             } catch (error) {
-                debugLog("Error loading ONNX model", error);
-                updateStatus("Error loading ONNX model: " + error.message, true);
+                debugLog("Error loading ONNX models", error);
+                hideProgressBar();
+                updateStatus("Error loading ONNX models: " + error.message, true);
                 console.error(error);
                 throw error;
             }
         }
+
+        // Handle model selection change
+        document.getElementById('modelSelect').addEventListener('change', async function(e) {
+            const selectedVariant = e.target.value;
+            debugLog(`Model selection changed to: ${selectedVariant}`);
+            
+            try {
+                // Disable buttons during model loading
+                document.getElementById('sampleButton').disabled = true;
+                document.getElementById('inferenceButton').disabled = true;
+                
+                await loadONNXModels(selectedVariant);
+                
+                // Re-enable sample button after successful model load
+                document.getElementById('sampleButton').disabled = false;
+                
+            } catch (error) {
+                // Re-enable sample button even on error, but model won't work
+                document.getElementById('sampleButton').disabled = false;
+            }
+        });
 
         // Load default image
         function loadDefaultImage() {
@@ -1045,6 +1333,10 @@
             document.getElementById('binaryMask').checked = DEFAULT_PARAMS.binaryMask;
             document.getElementById('grayscaleBackground').checked = DEFAULT_PARAMS.grayscaleBackground;
             
+            // Clear cached KV data
+            currentKCached = null;
+            currentVCached = null;
+            
             updateSliderValues();
             updateOriginalWithEllipse();
             updateGaussianOverlay();
@@ -1071,6 +1363,9 @@
                         originalImage = img;
                         processImage(img);
                         updateStatus("Image loaded successfully");
+                        // Clear cached KV data when new image is loaded
+                        currentKCached = null;
+                        currentVCached = null;
                     };
                     img.src = e.target.result;
                 };
@@ -1209,10 +1504,86 @@
             return coords;
         }
 
-        // Predict mask using ONNX model with 5-sigma bounding box optimization
+        // Run encoder to get cached K,V values
+        async function runEncoder(patchData, coordinateData, positionTensor) {
+            if (!encoderSession) {
+                throw new Error("Encoder model not loaded");
+            }
+
+            debugLog("Running encoder to compute K,V cache...");
+
+            // Prepare position tensor with scaling
+            const scaledPosition = new Float32Array(6);
+            scaledPosition[0] = positionTensor[0] * (imageWidth / 256);
+            scaledPosition[1] = positionTensor[1] * (imageHeight / 256);
+            scaledPosition[2] = positionTensor[2] * (imageWidth / 256);
+            scaledPosition[3] = positionTensor[3] * (imageHeight / 256);
+            scaledPosition[4] = positionTensor[4];
+            scaledPosition[5] = positionTensor[5];
+            
+            // Create input tensors for encoder
+            const feeds = {
+                'patches_p1': new ort.Tensor('float32', patchData[0], [patchData[0].length / 3, 3, 1, 1]),
+                'patches_p2': new ort.Tensor('float32', patchData[1], [patchData[1].length / 12, 3, 2, 2]),
+                'patches_p4': new ort.Tensor('float32', patchData[2], [patchData[2].length / 48, 3, 4, 4]),
+                'patches_p8': new ort.Tensor('float32', patchData[3], [patchData[3].length / 192, 3, 8, 8]),
+                'patches_p16': new ort.Tensor('float32', patchData[4], [patchData[4].length / 768, 3, 16, 16]),
+                'coords_p1': new ort.Tensor('float32', coordinateData[0], [coordinateData[0].length / 2, 2]),
+                'coords_p2': new ort.Tensor('float32', coordinateData[1], [coordinateData[1].length / 2, 2]),
+                'coords_p4': new ort.Tensor('float32', coordinateData[2], [coordinateData[2].length / 2, 2]),
+                'coords_p8': new ort.Tensor('float32', coordinateData[3], [coordinateData[3].length / 2, 2]),
+                'coords_p16': new ort.Tensor('float32', coordinateData[4], [coordinateData[4].length / 2, 2]),
+                'position': new ort.Tensor('float32', scaledPosition, [1, 6])
+            };
+
+            const startTime = performance.now();
+            const results = await encoderSession.run(feeds);
+            const encoderTime = performance.now() - startTime;
+            
+            debugLog(`Encoder completed in ${encoderTime.toFixed(2)}ms`);
+
+            const kCached = results['k_cached'];
+            const vCached = results['v_cached'];
+            
+            debugLog(`Cached tensors shape - K: [${kCached.dims}], V: [${vCached.dims}]`);
+            
+            return { kCached, vCached, encoderTime };
+        }
+
+        // Run predictor with cached K,V values
+        async function runPredictor(positionTensor, maskCoordinates, kCached, vCached) {
+            if (!predictorSession) {
+                throw new Error("Predictor model not loaded");
+            }
+
+            // Prepare position tensor with scaling
+            const scaledPosition = new Float32Array(6);
+            scaledPosition[0] = positionTensor[0] * (imageWidth / 256);
+            scaledPosition[1] = positionTensor[1] * (imageHeight / 256);
+            scaledPosition[2] = positionTensor[2] * (imageWidth / 256);
+            scaledPosition[3] = positionTensor[3] * (imageHeight / 256);
+            scaledPosition[4] = positionTensor[4];
+            scaledPosition[5] = positionTensor[5];
+
+            // Create input tensors for predictor
+            const feeds = {
+                'position': new ort.Tensor('float32', scaledPosition, [1, 6]),
+                'mask_coordinates': new ort.Tensor('float32', maskCoordinates, [maskCoordinates.length / 2, 2]),
+                'k_cached': kCached,
+                'v_cached': vCached
+            };
+
+            const startTime = performance.now();
+            const results = await predictorSession.run(feeds);
+            const predictorTime = performance.now() - startTime;
+
+            return { maskLogits: results['mask_logits'].data, predictorTime };
+        }
+
+        // Predict mask using encoder/predictor with 5-sigma bounding box optimization
         async function predictMask(patchData, coordinateData, positionTensor) {
-            if (!onnxSession) {
-                throw new Error("ONNX model not loaded");
+            if (!encoderSession || !predictorSession) {
+                throw new Error("ONNX models not loaded");
             }
 
             const H = imageHeight;
@@ -1259,17 +1630,6 @@
             // Create full mask filled with zeros
             const fullMask = new Float32Array(H * W);
 
-            // Prepare position tensor with scaling
-            const scaledPosition = new Float32Array(6);
-            scaledPosition[0] = positionTensor[0] * (W / 256);
-            scaledPosition[1] = positionTensor[1] * (H / 256);
-            scaledPosition[2] = positionTensor[2] * (W / 256);
-            scaledPosition[3] = positionTensor[3] * (H / 256);
-            scaledPosition[4] = positionTensor[4];
-            scaledPosition[5] = positionTensor[5];
-            
-            debugLog("Scaled position tensor:", Array.from(scaledPosition));
-
             // Log patch counts
             for (let i = 0; i < patchData.length; i++) {
                 const patchSize = [1, 2, 4, 8, 16][i];
@@ -1278,36 +1638,43 @@
             }
 
             try {
+                // Step 1: Run encoder once to get cached K,V (if not already cached)
+                let kCached, vCached, encoderTime = 0;
+                
+                if (!currentKCached || !currentVCached) {
+                    showProgressBar("Running encoder (computing K,V cache)...");
+                    const encoderResult = await runEncoder(patchData, coordinateData, positionTensor);
+                    kCached = encoderResult.kCached;
+                    vCached = encoderResult.vCached;
+                    encoderTime = encoderResult.encoderTime;
+                    
+                    // Cache the results for future use
+                    currentKCached = kCached;
+                    currentVCached = vCached;
+                    
+                    debugLog("K,V cache computed and stored");
+                } else {
+                    showProgressBar("Running encoder (using cached K,V)...");
+                    debugLog("Using cached K,V values");
+                    kCached = currentKCached;
+                    vCached = currentVCached;
+                }
+
+                // Step 2: Run predictor (potentially multiple times for chunks)
+                const maxPixelsPerChunk = getCurrentChunkSize();
+                let totalPredictorTime = 0;
+                
                 // Check if we need to chunk the inference
-                if (totalPixels <= MAX_PIXELS_PER_CHUNK) {
-                    // Single inference for the bounding box
-                    debugLog("Running single inference for bounding box");
+                if (totalPixels <= maxPixelsPerChunk) {
+                    // Single prediction for the bounding box
+                    debugLog("Running single prediction for bounding box");
+                    updateProgressBar(0, totalPixels, "Running predictor...");
                     
                     const maskCoordinates = generateBoundingBoxCoordinates(yMin, yMax, xMin, xMax, H, W);
                     
-                    // Create input tensors
-                    const feeds = {
-                        'patches_p1': new ort.Tensor('float32', patchData[0], [patchData[0].length / 3, 3, 1, 1]),
-                        'patches_p2': new ort.Tensor('float32', patchData[1], [patchData[1].length / 12, 3, 2, 2]),
-                        'patches_p4': new ort.Tensor('float32', patchData[2], [patchData[2].length / 48, 3, 4, 4]),
-                        'patches_p8': new ort.Tensor('float32', patchData[3], [patchData[3].length / 192, 3, 8, 8]),
-                        'patches_p16': new ort.Tensor('float32', patchData[4], [patchData[4].length / 768, 3, 16, 16]),
-                        'coords_p1': new ort.Tensor('float32', coordinateData[0], [coordinateData[0].length / 2, 2]),
-                        'coords_p2': new ort.Tensor('float32', coordinateData[1], [coordinateData[1].length / 2, 2]),
-                        'coords_p4': new ort.Tensor('float32', coordinateData[2], [coordinateData[2].length / 2, 2]),
-                        'coords_p8': new ort.Tensor('float32', coordinateData[3], [coordinateData[3].length / 2, 2]),
-                        'coords_p16': new ort.Tensor('float32', coordinateData[4], [coordinateData[4].length / 2, 2]),
-                        'position': new ort.Tensor('float32', scaledPosition, [1, 6]),
-                        'mask_coordinates': new ort.Tensor('float32', maskCoordinates, [totalPixels, 2])
-                    };
-
-                    const startTime = performance.now();
-                    const results = await onnxSession.run(feeds);
-                    const inferenceTime = performance.now() - startTime;
-                    
-                    debugLog(`Inference completed in ${inferenceTime.toFixed(2)}ms`);
-
-                    const maskLogits = results['mask_logits'].data;
+                    const predictorResult = await runPredictor(positionTensor, maskCoordinates, kCached, vCached);
+                    const maskLogits = predictorResult.maskLogits;
+                    totalPredictorTime = predictorResult.predictorTime;
 
                     // Apply sigmoid and place results in the full mask
                     let idx = 0;
@@ -1318,15 +1685,20 @@
                             idx++;
                         }
                     }
-                } else {
-                    // Chunk the inference
-                    debugLog(`Chunking inference into multiple parts (${totalPixels} pixels)`);
-                    updateStatus(`Running inference in chunks (${totalPixels} pixels)...`);
                     
-                    const rowsPerChunk = Math.floor(MAX_PIXELS_PER_CHUNK / boxWidth);
+                    updateProgressBar(totalPixels, totalPixels, "Prediction completed");
+                    
+                } else {
+                    // Chunk the prediction
+                    debugLog(`Chunking prediction into multiple parts (${totalPixels} pixels)`);
+                    updateProgressBar(0, totalPixels, "Running predictor in chunks...");
+                    
+                    const rowsPerChunk = Math.max(1, Math.floor(maxPixelsPerChunk / boxWidth));
                     const numChunks = Math.ceil(boxHeight / rowsPerChunk);
                     
-                    debugLog(`Processing in ${numChunks} chunks`);
+                    debugLog(`Processing in ${numChunks} chunks with max ${maxPixelsPerChunk} pixels per chunk (${rowsPerChunk} rows per chunk)`);
+                    
+                    let processedPixels = 0;
                     
                     for (let chunk = 0; chunk < numChunks; chunk++) {
                         const chunkYMin = yMin + chunk * rowsPerChunk;
@@ -1334,34 +1706,19 @@
                         const chunkHeight = chunkYMax - chunkYMin + 1;
                         const chunkPixels = chunkHeight * boxWidth;
                         
+                        // Safety check for valid chunk dimensions
+                        if (chunkHeight <= 0 || chunkPixels <= 0) {
+                            debugLog(`Skipping invalid chunk ${chunk + 1}: height=${chunkHeight}, pixels=${chunkPixels}`);
+                            continue;
+                        }
+                        
                         debugLog(`Chunk ${chunk + 1}/${numChunks}: rows ${chunkYMin}-${chunkYMax} (${chunkPixels} pixels)`);
                         
                         const maskCoordinates = generateBoundingBoxCoordinates(chunkYMin, chunkYMax, xMin, xMax, H, W);
                         
-                        // Create input tensors for this chunk
-                        const feeds = {
-                            'patches_p1': new ort.Tensor('float32', patchData[0], [patchData[0].length / 3, 3, 1, 1]),
-                            'patches_p2': new ort.Tensor('float32', patchData[1], [patchData[1].length / 12, 3, 2, 2]),
-                            'patches_p4': new ort.Tensor('float32', patchData[2], [patchData[2].length / 48, 3, 4, 4]),
-                            'patches_p8': new ort.Tensor('float32', patchData[3], [patchData[3].length / 192, 3, 8, 8]),
-                            'patches_p16': new ort.Tensor('float32', patchData[4], [patchData[4].length / 768, 3, 16, 16]),
-                            'coords_p1': new ort.Tensor('float32', coordinateData[0], [coordinateData[0].length / 2, 2]),
-                            'coords_p2': new ort.Tensor('float32', coordinateData[1], [coordinateData[1].length / 2, 2]),
-                            'coords_p4': new ort.Tensor('float32', coordinateData[2], [coordinateData[2].length / 2, 2]),
-                            'coords_p8': new ort.Tensor('float32', coordinateData[3], [coordinateData[3].length / 2, 2]),
-                            'coords_p16': new ort.Tensor('float32', coordinateData[4], [coordinateData[4].length / 2, 2]),
-                            'position': new ort.Tensor('float32', scaledPosition, [1, 6]),
-                            'mask_coordinates': new ort.Tensor('float32', maskCoordinates, [chunkPixels, 2])
-                        };
-
-                        const startTime = performance.now();
-                        const results = await onnxSession.run(feeds);
-                        const inferenceTime = performance.now() - startTime;
-                        
-                        debugLog(`Chunk ${chunk + 1} inference completed in ${inferenceTime.toFixed(2)}ms`);
-                        updateStatus(`Processing chunk ${chunk + 1}/${numChunks}...`);
-
-                        const maskLogits = results['mask_logits'].data;
+                        const predictorResult = await runPredictor(positionTensor, maskCoordinates, kCached, vCached);
+                        const maskLogits = predictorResult.maskLogits;
+                        totalPredictorTime += predictorResult.predictorTime;
 
                         // Apply sigmoid and place results in the full mask
                         let idx = 0;
@@ -1372,15 +1729,26 @@
                                 idx++;
                             }
                         }
+                        
+                        // Update processed pixels count and progress bar
+                        processedPixels += chunkPixels;
+                        updateProgressBar(processedPixels, totalPixels, "Running predictor in chunks...");
+                        
+                        // Small delay to allow UI updates
+                        await new Promise(resolve => setTimeout(resolve, 10));
                     }
                 }
 
+                debugLog(`Encoder time: ${encoderTime.toFixed(2)}ms, Predictor time: ${totalPredictorTime.toFixed(2)}ms`);
                 debugLog(`Total mask pixels computed: ${totalPixels}`);
+                
+                hideProgressBar();
                 return fullMask;
 
             } catch (error) {
                 debugLog("Error during inference:", error);
                 debugLog("Error stack:", error.stack);
+                hideProgressBar();
                 throw error;
             }
         }
@@ -1499,6 +1867,10 @@
             currentPatchData = null;
             currentCoordinateData = null;
             currentPositionTensor = null;
+            
+            // Clear cached KV data when patches change
+            currentKCached = null;
+            currentVCached = null;
             
             // Disable inference button until patches are sampled again
             document.getElementById('inferenceButton').disabled = true;
@@ -1652,6 +2024,10 @@
                 const positionTensor = new Float32Array([muX, muY, sigmaX, sigmaY, rotA, rotB]);
                 currentPositionTensor = positionTensor.slice();
 
+                // Clear cached KV data when patches change
+                currentKCached = null;
+                currentVCached = null;
+
                 // Visualize patches
                 visualizePatches(patchSizes);
 
@@ -1677,8 +2053,8 @@
 
         // Run inference only
         async function runInference() {
-            if (!onnxSession) {
-                updateStatus("Please wait for ONNX model to load", true);
+            if (!encoderSession || !predictorSession) {
+                updateStatus("Please wait for ONNX models to load", true);
                 return;
             }
             
@@ -1687,11 +2063,14 @@
                 return;
             }
 
+            // Hide progress bar at start of inference
+            hideProgressBar();
+            
             updateStatus("Running inference...");
             debugLog("Starting inference with sampled patches...");
 
             try {
-                // Run inference
+                // Run inference with cached approach
                 const mask = await predictMask(currentPatchData, currentCoordinateData, currentPositionTensor);
 
                 debugLog("Inference completed, visualizing mask...");
@@ -1707,6 +2086,9 @@
                 debugLog("Error stack:", error.stack);
                 updateStatus("Error during inference: " + error.message, true);
                 console.error(error);
+                
+                // Hide progress bar on error
+                hideProgressBar();
             }
         }
 
@@ -1921,6 +2303,10 @@
                 updateOriginalWithEllipse();
                 updateGaussianOverlay();
                 
+                // Clear cached KV data when Gaussian parameters change
+                currentKCached = null;
+                currentVCached = null;
+                
                 // Dynamic sampling for Gaussian parameters
                 if (document.getElementById('dynamicSampling').checked && imageData && wasmModule) {
                     samplePatches();
@@ -1931,6 +2317,10 @@
         ['numTokens', 'coverage', 'maxOverlapThreshold'].forEach(id => {
             document.getElementById(id).addEventListener('input', function() {
                 updateSliderValues();
+                
+                // Clear cached KV data when patch parameters change
+                currentKCached = null;
+                currentVCached = null;
                 
                 // Dynamic sampling for patch parameters
                 if (document.getElementById('dynamicSampling').checked && imageData && wasmModule) {
@@ -1974,7 +2364,7 @@
             try {
                 await initONNX();
                 await initWASM();
-                await loadONNXModel();
+                await loadONNXModels(); // Load default models (small)
                 loadDefaultImage();
                 updateSliderValues();
             } catch (error) {

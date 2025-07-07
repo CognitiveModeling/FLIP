@@ -15,7 +15,7 @@
 
 Try FLIP directly in your browser! **[→ Launch Interactive Demo](https://cognitivemodeling.github.io/FLIP/#demo)**
 
-The demo runs FLIP-Tiny (0.51M parameters) entirely client-side using ONNX Runtime Web. 
+The demo runs FLIP entirely client-side using ONNX Runtime Web. 
 
 ## ⚡ Performance
 
