@@ -1,5 +1,4 @@
 import json
-import jsmin
 import os
 
 
@@ -70,7 +69,7 @@ class Configuration(Dict):
 
     def load_recursive(self, path: str):
         with open(path) as file:
-            data = json.loads(jsmin.jsmin(file.read()))
+            data = json.loads(file.read())
         if "parent_config" in data:
             parent_path = data["parent_config"]
             # Check if the parent path is just a filename

@@ -8,7 +8,6 @@ from PIL import Image
 import pandas as pd
 import argparse
 import os
-from einops import rearrange
 import time
 import math
 from utils.configuration import Configuration

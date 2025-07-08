@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 import flip_position  # This is our compiled C extension
-import flip_gaussian
 
 def compute_position_rot_from_rho(position_rho):
     """

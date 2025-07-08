@@ -1,0 +1,26 @@
+name: flip-inference
+channels:
+  - conda-forge
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - pytorch
+  - numpy
+  - opencv
+  - h5py
+  - pandas
+  - pillow
+  - pip
+  - tqdm
+  
+  - pip:
+      - onnx
+      - onnxruntime-gpu
+      - turbojpeg
+
+# For CPU-only inference, replace with:
+# - pytorch-cpu
+# - onnxruntime (instead of onnxruntime-gpu)
+
+prefix: flip-inference
