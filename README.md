@@ -109,17 +109,87 @@ python -m model.scripts.evaluate_single_hdf5 \
 ```
 
 
-### Training
+## 🔧 Training
 
-Train FLIP on your own data:
+FLIP uses HDF5 datasets for efficient training and evaluation. To train on your own data, you'll need to convert it to the FLIP HDF5 format.
 
-<b>coming soon</b>
+### Converting COCO Format
+
+If your data is in COCO format, use our conversion script:
+
+```bash
+python model/scripts/convert_coco_to_hdf5.py \
+    --coco_root /path/to/coco/images \
+    --annotation_file /path/to/annotations.json \
+    --output_dir /path/to/output \
+    --split train2017
+```
+
+This script:
+- Converts COCO polygon and RLE masks to binary masks
+- Computes bounding boxes and Gaussian parameters for each instance
+- Compresses images and masks for efficient storage
+- Creates the HDF5 structure required by FLIP
+
+### HDF5 Dataset Structure
+
+The generated HDF5 files contain:
+- `rgb_images`: Compressed JPEG images
+- `instance_masks`: Compressed PNG masks  
+- `positions`: Gaussian parameters (μₓ, μᵧ, σₓ², σᵧ², σₓᵧ)
+- `instance_mask_bboxes`: Bounding boxes for each mask
+- `coco_image_ids`, `license_ids`: Metadata for attribution
+
+### Custom Data Conversion
+
+For non-COCO datasets, adapt the conversion script by:
+1. Implementing your annotation parser
+2. Converting masks to binary format
+3. Computing Gaussian parameters using `compute_gaussian_params_from_mask()`
+4. Following the HDF5 structure from the COCO converter
+
+### Training Configuration
+
+Update your training config to point to the new HDF5 files:
+
+```json
+{
+  "data": {
+    "train": [{"paths": ["/path/to/your-train-v1.hdf5"]}],
+    "val": [{"paths": ["/path/to/your-val-v1.hdf5"]}]
+  }
+}
+```
+
+### Start Training
+
+```bash
+python -m model.main --cfg your_config.json
+```
+
+For distributed training:
+```bash
+python -m model.main --cfg your_config.json --num-gpus 4
+```
+
+## 🚀 Inference Pipeline
+
+The `inference/` directory provides deployment helpers for FLIP models:
+
+- **ONNX Export**: Convert trained PyTorch models to ONNX format with KV caching optimization
+- **WebAssembly Support**: Compile C extensions to WASM for efficient browser-based inference
+- **Optimized C Extensions**: High-performance patch sampling and Gaussian operations for faster preprocessing
+- **Evaluation Tools**: Comprehensive benchmarking utilities for HDF5 datasets
+
+For detailed setup and usage instructions, see [`inference/README.md`](inference/README.md).
+
 
 ## 📈 Reproducing Paper Results
 
 ### Benchmark Evaluation
 
 <b>coming soon</b>
+
 
 ## 📝 Citation
 
@@ -133,6 +203,7 @@ If you find FLIP useful for your research, please cite our paper:
   year={2025}
 }
 ```
+
 
 ## 📜 License
 
