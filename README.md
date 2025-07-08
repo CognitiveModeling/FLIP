@@ -65,12 +65,12 @@ cd ..
 Download pre-trained FLIP models:
 
 <!-- TODO: Add actual download links -->
-| Model | Parameters | Mean IoU | Download |
-|-------|------------|----------|----------|
-| FLIP-Tiny | 0.51M | 78.24% | [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/YPdFxPHsTGEkNwz) |
-| FLIP-Small | 2.3M | 79.29% | [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/Zj3xDBXrZcSMtoy) |
-| FLIP-Middle | 11.5M | 79.93% | [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/Cx4kTMbRrD5DCmt) |
-| FLIP-Large | 96.6M | 80.33% | [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/57NXrqrxmzjxzoX) |
+| Model | Parameters | Mean IoU | Checkpoints | ONNX Encoder | ONNX Predictor |
+|-------|------------|----------|----------|----------|----------|
+| FLIP-Tiny | 0.51M | 78.24% | [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/YPdFxPHsTGEkNwz) | [Download](https://manuel-traub.de/onnx/flip-encoder-tiny.onnx) | [Download](https://manuel-traub.de/onnx/flip-predictor-tiny.onnx) |
+| FLIP-Small | 2.3M | 79.29% | [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/Zj3xDBXrZcSMtoy) | [Download](https://manuel-traub.de/onnx/flip-encoder-small.onnx) | [Download](https://manuel-traub.de/onnx/flip-predictor-small.onnx) |
+| FLIP-Middle | 11.5M | 79.93% | [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/Cx4kTMbRrD5DCmt) | [Download](https://manuel-traub.de/onnx/flip-encoder-middle.onnx) | [Download](https://manuel-traub.de/onnx/flip-predictor-middle.onnx) |
+| FLIP-Large | 96.6M | 80.33% | [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/57NXrqrxmzjxzoX) | [Download](https://manuel-traub.de/onnx/flip-encoder-large.onnx) | [Download](https://manuel-traub.de/onnx/flip-predictor-large.onnx) |
 
 ## 📊 Datasets
 
