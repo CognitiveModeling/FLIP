@@ -77,13 +77,11 @@ Download pre-trained FLIP models:
 Pre-processed evaluation sets for reproducibility:
 
 <b>coming soon</b>
-<!--
-- **Hypersim**: [Download](TODO_HYPERSIM_LINK)
-- **KITTI-360**: [Download](TODO_KITTI360_LINK) 
-- **OpenImages**: [Download](TODO_OPENIMAGES_LINK)
-- **COCO**: [Download](TODO_COCO_LINK)
-- **LVIS**: [Download](TODO_LVIS_LINK)
--->
+- **Hypersim**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/7RcABXMoXXMqX4t)
+- **KITTI-360**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/5HAGg3DdQa7TWyR)
+- **OpenImages**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/ie2t5BdJeHFHmS9)
+- **COCO**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/8SRpRdPTjq7PRMH)
+- **LVIS**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/FYNnxMjBPDbfYCD)
 
 ## 🔥 Quick Start
 
