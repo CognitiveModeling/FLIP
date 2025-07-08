@@ -82,6 +82,7 @@ Pre-processed evaluation sets for reproducibility:
 - **OpenImages**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/ie2t5BdJeHFHmS9)
 - **COCO**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/8SRpRdPTjq7PRMH)
 - **LVIS**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/FYNnxMjBPDbfYCD)
+- **ObjaScale**: [Download](https://nc.mlcloud.uni-tuebingen.de/index.php/s/4CNc5XNc88NWXZK)
 
 ## 🔥 Quick Start
 
