@@ -102,7 +102,7 @@ python -m model.scripts.demo \
 Run evaluation on a dataset:
 
 ```bash
-python model/scripts/evaluate_single_hdf5.py \
+python -m model.scripts.evaluate_single_hdf5 \
     --dataset_path path/to/dataset.hdf5 \
     --model_path checkpoints/flip-large.ckpt \
     --config configs/flip-large.json \
