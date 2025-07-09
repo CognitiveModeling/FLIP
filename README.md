@@ -185,10 +185,20 @@ For detailed setup and usage instructions, see [`inference/README.md`](inference
 
 ## 📈 Reproducing Paper Results
 
-### Benchmark Evaluation
+Download the model checkpoints and evaluation datasets from the links provided above. Create directories `checkpoints/`, `datasets/`, and `results/` to organize your files.
 
-<b>coming soon</b>
+Run evaluation on any model-dataset combination using:
 
+```bash
+python -m model.scripts.evaluate_single_hdf5 \
+    --dataset_path datasets/COCO/coco_val2017.hdf5 \
+    --model_path checkpoints/flip-large.ckpt \
+    --config configs/flip-large.json \
+    --optimized \
+    --output_dir results/flip-large/coco \
+```
+
+Results are saved as CSV files with IoU scores and timing information. Use `--optimized` for 5-sigma bounding box optimization or `--hirachical` for the hirachical inference version.
 
 ## 📝 Citation
 
